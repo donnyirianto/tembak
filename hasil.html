@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+      <title>Data</title>
+
+    <meta name="description" content="EDP  Easy Tools  Page">
+    <meta name="keywords" content="Edp,Login,Page,Guide,Update,Delete,Add">
+    <meta name="author" content="Donny Irianto A">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+ 
+    
+  </head>
+  <body onLoad="buildHtmlTable('#excelDataTable')">
+    <div class="main-container" id="main-container"> 
+        <div class="main-content-inner"> 
+              <div class="page-content"> 
+                      
+                            <div class="row">
+                                <div class="col-xs-12">
+                                   
+									<div class="col-xs-12 col-sm-12  widget-container-col">
+										<div style="opacity: 1;" class="widget-box widget-color-red light-border ">
+											<div class="widget-header">
+											  <h5 class="widget-title smaller center">Hasil Download Data Toko</h5>
+											</div>
+
+											<div class="widget-body">
+											  <div class="widget-main padding-6">
+												<div class="alert alert-danger">
+											    <table id="excelDataTable"style="font-family: verdana;font-size: 11px;" border="1" cellpadding="2" cellspacing="0">
+												</table>											 
+												</div>
+											  </div>
+											</div>
+										  </div>
+									</div>
+                                   
+                                 
+                                </div><!-- /.col -->
+                              </div><!-- /.row -->
+
+              </div>
+     
+        </div> 
+    </div>
+  <script src="jquery.min.js"></script>
+  <script src="data.txt"></script>
+<script type="text/javascript"> 
+ 
+// Builds the HTML Table out of Donny.
+function buildHtmlTable(selector) {
+  
+  var columns = addAllColumnHeaders(Donny, selector);
+
+  for (var i = 0; i < Donny.length; i++) {
+    var row$ = $('<tr/>');
+    for (var colIndex = 0; colIndex < columns.length; colIndex++) {
+      var cellValue = Donny[i][columns[colIndex]];
+      if (cellValue == null) cellValue = "";
+      row$.append($('<td/>').html(cellValue));
+    }
+    $(selector).append(row$);
+  }
+}
+
+// Adds a header row to the table and returns the set of columns.
+// Need to do union of keys from all records as some records may not contain
+// all records.
+function addAllColumnHeaders(Donny, selector) {
+  var columnSet = [];
+  var headerTr$ = $("<tr/>");
+
+  for (var i = 0; i < Donny.length; i++) {
+    var rowHash = Donny[i];
+    for (var key in rowHash) {
+      if ($.inArray(key, columnSet) == -1) {
+        columnSet.push(key);
+        headerTr$.append($('<th/>').html(key));
+      }
+    }
+  }
+  $(selector).append(headerTr$);
+
+  return columnSet;
+}
+</script>
+  </body>
+  
+</html>
