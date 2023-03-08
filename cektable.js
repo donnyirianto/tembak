@@ -1,5 +1,5 @@
 const fs = require('fs'); 
-const Models = require('./modelsnew/model')
+const Models = require('./models/model')
 
 
 process.setMaxListeners(0);
@@ -25,7 +25,8 @@ const doitBro = async () => {
       console.log("Running At : " + start)    
 
       deleteFile('./data.txt');    
-      const fileReport = fs.createWriteStream("data.txt");   
+      const fileReport = fs.createWriteStream("data.txt");
+        
       fileReport.once('open', async function(fd) { 
         fs.appendFile('data.txt',"let Donny = [", errx => {
           if (errx) {

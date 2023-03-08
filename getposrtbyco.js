@@ -1,6 +1,6 @@
 var cron = require('node-cron');
 const dayjs = require('dayjs');
-const Models = require('./modelsnew/model')
+const Models = require('./models/model')
 const Ip = require('./helpers/iptoko')
 
 console.log("Service Start")    
@@ -23,7 +23,8 @@ const cekToko = async () => {
         if( tgl_ok > tgl_time_out AND tgl_ok > tgl_underlying AND tgl_ok > tgl_unable , 'OK' ,
           if( tgl_underlying > tgl_time_out AND tgl_underlying > tgl_unable ,
             'Underlying Connection',
-            if(tgl_time_out > tgl_unable,'Time out to the server','Unable to connect to the server')
+            if(tgl_time_out > tgl_unable,'Time out to the server',
+              if(tgl_unable ='2020-01-01 00:00:00','Tidak Ada log bermasalah','Unable to connect to the server'))
           )
         ) as keterangan
          from (
@@ -40,36 +41,36 @@ const cekToko = async () => {
         left join 
         (
         select 
-        (select toko from toko ) as toko,tgl,\`log\` from posrt_tracelog 
+        (select toko from toko ) as toko,tgl,\`log\` from tracelog 
         where 
-        \`log\` like '%under%' 
-        and tgl between '${r.tanggal_lunas}' and '${r.tanggal_terima}'
+        \`log\` rlike '172.24.16.160' and \`log\` like '%under%' 
+        and tgl between '${r.sebelum}' and '${r.sesudah}'
         order by tgl desc limit 1)  b on a.toko =b.toko
         left join 
         (select 
-        (select toko from toko ) as  toko,tgl,\`log\` from posrt_tracelog 
+        (select toko from toko ) as  toko,tgl,\`log\` from tracelog 
         where
-        \`log\` like '%out%'
-        and tgl between '${r.tanggal_lunas}' and '${r.tanggal_terima}'
+        \`log\` rlike '172.24.16.160' and \`log\` like '%out%'
+        and tgl between '${r.sebelum}' and '${r.sesudah}'
         order by tgl desc limit 1) c on a.toko=c.toko
         left join    
         (
         select 
         (select toko from toko ) as  toko,tgl,log 
-        from posrt_tracelog 
+        from tracelog 
         where 
-        \`log\` like '%unable%'
-        and tgl between '${r.tanggal_lunas}' and '${r.tanggal_terima}'
+        \`log\` rlike '172.24.16.160' and \`log\` like '%unable%'
+        and tgl between '${r.sebelum}' and '${r.sesudah}'
         order by tgl desc limit 1
         ) e on a.toko=e.toko
         left join    
         (
         select 
         (select toko from toko ) as  toko,tgl,log 
-        from posrt_tracelog 
+        from tracelog 
         where
-        \`log\` like '%SendTableOK%'
-        and tgl between '${r.tanggal_lunas}' and '${r.tanggal_terima}'
+        \`log\` rlike '172.24.16.160' and \`log\` like '%SendTableOK%'
+        and tgl between '${r.sebelum}' and '${r.sesudah}'
         order by tgl desc limit 1
         ) d on a.toko=d.toko
         
@@ -77,10 +78,10 @@ const cekToko = async () => {
         (
         select 
         (select toko from toko ) as  toko,tgl,log 
-        from posrt_tracelog 
+        from tracelog 
         where  
-        \`log\` like '%henti%'
-        and tgl between '${r.tanggal_lunas}' and '${r.tanggal_terima}'
+        \`log\` rlike '172.24.16.160' and \`log\` like '%henti%'
+        and tgl between '${r.sebelum}' and '${r.sesudah}'
         order by tgl desc limit 1
         ) f on a.toko=f.toko
         
@@ -88,10 +89,10 @@ const cekToko = async () => {
         (
         select 
         (select toko from toko ) as  toko,tgl,log 
-        from posrt_tracelog 
+        from tracelog 
         where  
-        \`log\` like '%jalan%'
-        and tgl between '${r.tanggal_lunas}' and '${r.tanggal_terima}'
+        \`log\` rlike '172.24.16.160' and \`log\` like '%jalan%'
+        and tgl between '${r.sebelum}' and '${r.sesudah}'
         order by tgl desc limit 1
         ) g on a.toko=g.toko
         
@@ -103,18 +104,15 @@ const cekToko = async () => {
       if(dataip != "Gagal" && dataip.data.length > 0){
         
         const rv = await Models.vquery(dataip.data[0].IP, queryCheck)
-        
-        if(rv === "Gagal" ){
+        console.log(rv)
+        if(rv === "Gagal"){
           
           console.log(dataip.data[0].KDCAB +'|'+ dataip.data[0].TOKO +'|Gagal Koneksi') 
           //await Models.UpdateFlagPosrt2(r.kdcab,r.kdtk,r.tanggal,r.jam,`Koneksi Timeout`)
         }else{ 
           
-          if(rv[0].keterangan != "null"){
-            await Models.UpdateFlagPosrt2(r.kdtk,rv[0].keterangan)
-            console.log(dataip.data[0].KDCAB +'|'+ dataip.data[0].TOKO +'|Sukses') 
-          }
-          
+          await Models.UpdateFlagPosrt2(r.noco,rv.data[0].keterangan)
+          console.log(dataip.data[0].KDCAB +'|'+ dataip.data[0].TOKO +'|Sukses') 
         }
 
       }else{

@@ -70,6 +70,20 @@ create table if not exists bck_list_plu_depo_230207 select * from list_plu_depo;
 delete from list_plu_depo;
 insert ignore into list_plu_depo(KODE_TOKO,KODE_PLU)
 values 
+('${r.kdtk}',20127302),
+('${r.kdtk}',20126761),
+('${r.kdtk}',20081740),
+('${r.kdtk}',20126747),
+('${r.kdtk}',20092043),
+('${r.kdtk}',20124459),
+('${r.kdtk}',20127276),
+('${r.kdtk}',20126897),
+('${r.kdtk}',20126424),
+('${r.kdtk}',20124285),
+('${r.kdtk}',20124756),
+('${r.kdtk}',20124903),
+('${r.kdtk}',20126818),
+('${r.kdtk}',20120276),
 ('${r.kdtk}',10024188),
 ('${r.kdtk}',10024189),
 ('${r.kdtk}',20116881),

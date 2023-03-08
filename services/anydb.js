@@ -1,5 +1,5 @@
 
-const zconn = async (host,user,password,database,port, queryx) => {
+const runQuery = async (host,user,password,database,port, queryx) => {
   try {
       const mysql = require('mysql2/promise');
       const dbnya = { /* don't expose password or any sensitive info, done only for demo */
@@ -15,11 +15,16 @@ const zconn = async (host,user,password,database,port, queryx) => {
       const conn =  await mysql.createConnection(dbnya);  
       const [result] = await conn.query(queryx)
       conn.end()
-      return result
+      return {
+        status: "OK",
+        data:result
+      }
     
   } catch (error) { 
-    ///console.log(error)
-    return "Gagal"
+    return {
+      status: "NOK",
+      data: error
+    }
   }
 }
 
@@ -101,5 +106,5 @@ const zconn_array = async (host,user,password,database,port, queryx) => {
 }
 
 module.exports= {
-  zconn, zconnTembak, zconnTembakMany,zconn_array
+  runQuery, zconnTembak, zconnTembakMany,zconn_array
 }

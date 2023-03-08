@@ -30,7 +30,7 @@
 											<div class="widget-body">
 											  <div class="widget-main padding-6">
 												<div class="alert alert-danger">
-											    <table id="excelDataTable"style="font-family: verdana;font-size: 11px;" border="1" cellpadding="2" cellspacing="0">
+											    <table id="excelDataTable" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;font-size: 11px;" border="1" cellpadding="2" cellspacing="0">
 												</table>											 
 												</div>
 											  </div>
@@ -47,7 +47,7 @@
         </div> 
     </div>
   <script src="jquery.min.js"></script>
-  <script src="data.txt"></script>
+  <script src="res_hasil.txt"></script>
 <script type="text/javascript"> 
  
 // Builds the HTML Table out of Donny.
@@ -78,7 +78,7 @@ function addAllColumnHeaders(Donny, selector) {
     for (var key in rowHash) {
       if ($.inArray(key, columnSet) == -1) {
         columnSet.push(key);
-        headerTr$.append($('<th/>').html(key));
+        headerTr$.append($('<th/>').html(key.toLocaleUpperCase()));
       }
     }
   }

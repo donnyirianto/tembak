@@ -36,8 +36,8 @@ const doitBro = async () => {
         (select kirim from toko) as kdcab,
         (select toko from toko) as toko,
         (select nama from toko) as nama,
-        (select tgl from tracelog where date(tgl) = '2023-02-20' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan Set_LastTransferAuto' limit 1) as start_trf_data,
-        (select tgl from tracelog where date(tgl) = '2023-02-20' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan UpdateConstDT1' limit 1) as finish_trf_data;
+        (select tgl from tracelog where date(tgl) = '2023-02-27' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan Set_LastTransferAuto' limit 1) as start_trf_data,
+        (select tgl from tracelog where date(tgl) = '2023-02-27' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan UpdateConstDT1' limit 1) as finish_trf_data;
 `
         const rv = await Models.vquery(r.ip1, queryTembak2)
           

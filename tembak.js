@@ -12,8 +12,10 @@ const Models = require('./modelsnew/model');
         update vir_bacaprod set filter = 'ON' where jenis = 'SKIP_ODBC';
         */
         const queryTembakx= ` 
-        replace into vir_bacaprod
-        values ('SKIP_ODBC', 'ON', 'Lewati pemanggilan ODBC', 'PosIDM', '', '2021-03-23 14:24:44', '2021-03-31 16:44:17', 'Dari WebService')
+        update vir_bacaprod set filter = 'ON' where jenis = 'tkx_ws';
+        delete from list_plu_depo;
+        delete from dcmast where type_dc= 'DCD';
+        update dcmast set tgl_awal = null, tgl_akhir=null,flagprod='' where type_dc='DCS';
         ` 
 
 /* SELECT "DeletePromoMatriks|230210014955|261";6^, Updtime = NOW(), Runtime = NULL, TipeJadwal = 6^6^, Jadwal = 6^6^; INSERT INTO pos.log_monitor (WAKTUREPORT,JENIS,KETERANGAN) VALUES (NOW(),"7","TembakDataToko|DeletePromoMatriks|IdStatus:261|KodePromo1:HSFB0562|KodePromo2:HSFB0562");

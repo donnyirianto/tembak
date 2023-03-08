@@ -1,9 +1,6 @@
 const { Console } = require('console');
 const fs = require('fs');
-const venvLocal = require('./Models/venvLocal');
-const vquery = require('./Models/vquery');
-const connection = require('./Models/zconn');
-const Models = require('./modelsnew/model')
+const Models = require('./models/model')
 
 
 process.setMaxListeners(0);

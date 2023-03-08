@@ -1,89 +1,42 @@
-const fs = require('fs'); 
-const Models = require('./modelsnew/model')  
+const dayjs = require('dayjs');
+const conn_ho = require('./services/dbho');
+const getDataToko = require('./helpers/getDataToko');
+const path = require('path');
+const file_sukses = path.basename('/home/donny/project/tembak/res_hasil.txt');
+const file_gagal = path.basename('/home/donny/project/tembak/res_gagal.txt');
 
-const deleteFile = (filePath) => {
-  // Unlink the file.
-  fs.unlink(filePath, (error) => {
-    if (!error) {
-       return "Sukses Hapus"
-    } else {
-      return "Gagal Hapus"
-    }
-  })
-};
+const runGetData = async () => {
+  try {    
+    console.info(`[Get Data] - Start :: ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`)
 
-const doitBro = async () => {
-    try {    
-      const start = new Date();
-      console.log("Running At : " + start)    
+    const acuan_toko =`select a.kdcab, toko, nama
+    from m_toko_ip a
+    WHERE LEFT (TOKO,1) NOT IN('D','G','W','B','R')
+    and ip_induk not like '%192.168%'
+    and nama not like '%event%'
+    and nama not like '%mobile%'
+    and kdcab in('G097')
+    limit 100
+    `
+    let querySelect =`
+      select 
+      (select kirim from toko) as kdcab,
+      (select toko from toko) as toko,
+      (select nama from toko) as nama,
+      (select filter from vir_bacaprod where jenis='tkx_ws') as tkx_ws;
+      ` 
+    const list = await conn_ho.query(acuan_toko); 
+    
+    await getDataToko.cekDataToko(list,querySelect,file_sukses,file_gagal)
 
-      deleteFile('./data.txt');    
-      const fileReport = fs.createWriteStream("data.txt");   
-      fileReport.once('open', async function(fd) { 
-        fs.appendFile('data.txt',"let Donny = [", errx => {
-          if (errx) {
-            console.log("error Tulis File")
-            return true
-          } 
-          return true
-        })      
-        const results = await Models.getListIp();
-       
-        results.forEach( async (r) => { 
-   
-        const queryTembak2 =`
-        select (select kirim from toko) as kdcab,
-        (select toko from toko) as toko,
-        (select nama from toko) as nama,
-          plu,qty,tgl_awal,tgl_akh from fixed_tb where plu in(
-          20069208,
-          20036157,
-          20019673,
-          20090009
-        );
-` 
- 
-        const rv = await Models.vquery(r.ip1, queryTembak2)
-          
-          if(rv === "G" || rv === "Gagal" ){
-            console.log(r.kdtk +'|'+ r.kdcab +'|Gagal data') 
-          }else{
-            
-            const a = JSON.stringify(rv).replace(/[\]\[]/g,"") 
-            //const c = a.replace(/[}{]/g,"")
-           
-            fs.appendFile('data.txt',a, errx => {
-              if (errx) { 
-                console.log(r.kdtk +'|'+ r.kdcab +'|Gagal')
-                return true
-              }else{
-                console.log(r.kdtk +'|'+ r.kdcab +'|Sukses')
-                return true
-              }
-              
-            })
-          }
-          
-        })
-      })
-    }catch(err){
-      console.log("Sini Ketnya : " + err) 
-      return true
-    }  
-}
- 
-doitBro()
+    console.info(`[Get Data] - Finish :: ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`)
+    
+    return
 
-/* 
-select 
-(select kirim from toko) as kdcab,
-(select toko from toko) as toko,
-(select nama from toko) as nama,
-(select itemsyarat from promo_matriks where kodepromo='HSFB0562') as item_syarat,
-(select period1 from const where rkey='tmt') as tmt,
-(select \`desc\` from const where rkey='dt_') as dt,
-(select \`desc\` from const where rkey='dt1') as jam_trf_data,
-(select tgl from tracelog_posnet where \`log\` rlike 'mulai' 
-order by tgl desc limit 1) as buka_pos_kasir,
-(select count(*) from ptag where kodepromo='HSFB0562' and prdcd !='20125798') as ptag,
-(select count(*) from ptag_old where kodepromo='HSFB0562' and prdcd !='20125798') as ptag_old; */
+  }catch(err){
+    console.warn("Error: " + err) 
+    return
+  }  
+}   
+runGetData()
+  

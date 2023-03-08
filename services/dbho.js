@@ -3,7 +3,7 @@ const config = require('../config');
 
 const conn =  mysql.createPool(config.dbho); 
 async function query(query) {
-  const result = await conn.query(query)
+  const [result] = await conn.query(query)
 
   return result
 } 

@@ -1,7 +1,7 @@
 const conn_local = require('../services/db');
 const conn_iris = require('../services/db2');
 const conn_ho = require('../services/dbho');
-const zconn = require('../services/anydb'); 
+const conn_any = require('../services/anydb'); 
 const ftp = require('../services/ftp'); 
 var dateFormat = require("dateformat"); 
 var dayjs = require("dayjs");
@@ -24,23 +24,10 @@ root1
 root2
 N8rM5RmJYbKGbEFWuvuSb6bauDFB3BPTc=zOMd2onoNJ
  */
-const getListIp = async () => {
+const getListIp = async (query) => {
     try{
-            
-       //,'G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224'
-       //and kdcab in('G004','G030','G025','G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224','G234','G236','G237')
-       //        and toko in('FXUU','T0OP')
-       const [rows] = await conn_ho.query(`
-       select TOKO as kdtk, nama, a.kdcab, ip_induk as ip1
-       from m_toko_ip a
-       WHERE LEFT (TOKO,1) NOT IN('D','G','W','B','R')
-       and ip_induk not like '%192.168%'
-       and nama not like '%event%'
-       and nama not like '%mobile%'
-       and a.kdcab in('G034','G146')
+    const [rows] = await conn_ho.query(query)
        
-       `)
-       //and toko in('TCLP','TBFY')
         return rows
     }catch(e){
         console.log(e)
@@ -191,7 +178,7 @@ const getListIpIkiosk = async () => {
 const getListIpIris = async () => {
     try{
        
-        const [rows] = await conn_ho.query(`
+        const rows = await conn_ho.query(`
         select * from m_server_iris
         WHERE jenis = 'IRIS' and reg='REG4'
         `)
@@ -466,7 +453,7 @@ const updateFlag4 = async (kdtk) => {
 const updateFlagIdm = async (kdtk,ket) => {
     try{ 
         const queryx = `UPDATE idmadvance SET keterangan='${ket}', updtime= now() where kdtk ='${kdtk}' `
-        await zconn.zconnTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
+        await conn_any.runQueryTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
       
         return "Sukses Update"
     }catch(e){
@@ -575,7 +562,7 @@ const getListIpCeknp2 = async () => {
     try{
        //where kdcab in('G097','G174','G030','G177','G158')
         const [rows] = await conn_ho.query(`
-        select a.kdcab,a.kdtk,left(namafile,21) as namafile_pilih,a.namafile,
+        select a.kdcab,a.kdtk,left(namafile,19) as namafile_pilih,a.namafile,docno,
         b.ip_induk
         from ceknp2 a 
         left join m_toko_ip b on a.kdtk  = b.toko
@@ -760,7 +747,7 @@ const getListIpIntransit = async () => {
 const vqueryIkios = async (iptoko, param) => {
     try{
         
-        const rows = await zconn.zconn(iptoko,"ikiosk","indomaret","ikioskterminal", 3306, param)
+        const rows = await conn_any.runQuery(iptoko,"ikiosk","indomaret","ikioskterminal", 3306, param)
         if(rows === "Gagal"){
             return "Gagal" 
         }else{
@@ -776,18 +763,17 @@ const vqueryIkios = async (iptoko, param) => {
 const vquery = async (iptoko, param) => {
     try{
         
-        const rows = await zconn.zconn(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
+        const rows = await conn_any.runQuery(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
         
-        if(rows === "Gagal"){
-            const rows2 = await zconn.zconn(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
-            if(rows2 === "Gagal"){
-                const rows3 = await zconn.zconn(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)   
-                if(rows3 === "Gagal"){
+        if(rows.status === "NOK"){
+            const rows2 = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
+            if(rows2.status === "NOK"){
+                const rows3 = await conn_any.runQuery(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)   
+                if(rows3.status === "NOK"){
                     return "Gagal"
                 }else{
                     return rows3
-                }
-                
+                }                
             }else{
                 return rows2
             }
@@ -796,8 +782,7 @@ const vquery = async (iptoko, param) => {
             return rows
         }
         
-    }catch(e){ 
-        console.log(e)
+    }catch(e){  
         return "Gagal error"
     }
 } 
@@ -805,10 +790,10 @@ const vquery = async (iptoko, param) => {
 const vquerySpdmast = async (iptoko, param) => {
     try{
         
-        const rows = await zconn.zconnTembak(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
+        const rows = await conn_any.runQueryTembak(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
         
         if(rows === "Gagal"){
-            const rows2 = await zconn.zconnTembak(iptoko,"kasir","cL/EohOGyT3uPR/HmG9zSpHt6/V8zPQKs=VunZtrQfh1","pos", 3306, param)
+            const rows2 = await conn_any.runQueryTembak(iptoko,"kasir","cL/EohOGyT3uPR/HmG9zSpHt6/V8zPQKs=VunZtrQfh1","pos", 3306, param)
             if(rows2 === "Gagal"){
                 
                 return "Gagal"
@@ -828,11 +813,11 @@ const vquerySpdmast = async (iptoko, param) => {
 
 const vqueryTembak = async (iptoko, param) => {
     try{ 
-        const rows = await zconn.zconnTembak(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
+        const rows = await conn_any.runQueryTembak(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
         if(rows === "Gagal"){
-            const rows2 = await zconn.zconnTembak(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
+            const rows2 = await conn_any.runQueryTembak(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
             if(rows2 === "Gagal"){
-                const rows3 = await zconn.zconnTembak(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)
+                const rows3 = await conn_any.runQueryTembak(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)
                 if(rows3 === "Gagal"){
                     return "Gagal"
                 }else{
@@ -853,7 +838,7 @@ const vqueryTembak = async (iptoko, param) => {
 
 const vqueryTembakIris = async (ip,user,pass,db, param) => {
     try{ 
-        const rows = await zconn.zconn(ip,user,pass,db, 3306, param)
+        const rows = await conn_any.runQuery(ip,user,pass,db, 3306, param)
         if(rows === "Gagal"){ 
             return "Gagal"  
         }else{
@@ -870,11 +855,11 @@ const vqueryTembakIris = async (ip,user,pass,db, param) => {
 const vquerycheckpass = async (iptoko, param) => {
     try{
        
-        const rows = await zconn.zconn(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
+        const rows = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
         if(rows === "Gagal"){
-            const rows2 = await zconn.zconn(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
+            const rows2 = await conn_any.runQuery(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
             if(rows2 === "Gagal"){
-                const rows3 = await zconn.zconn(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)
+                const rows3 = await conn_any.runQuery(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)
                 if(rows3 === "Gagal"){
                     return "Gagal Koneksi"
                 }else{
@@ -898,7 +883,7 @@ const vquerycheckpass = async (iptoko, param) => {
 const vquerycheckpass3307 = async (iptoko, param) => {
     try{
         
-        const rows = await zconn.zconn(iptoko,"root","$d3@pr15mata","", 3307, param)
+        const rows = await conn_any.runQuery(iptoko,"root","$d3@pr15mata","", 3307, param)
         if(rows === "Gagal"){
              
             return "OFF"
@@ -916,9 +901,9 @@ const vquerycheckpass3307 = async (iptoko, param) => {
 
 const vqueryTembakMany = async (iptoko, query1,query2,query3,query4,query5,query6,query7) => {
     try{
-        const rows = await zconn.zconnTembakMany(iptoko,"kasir","D5SgTTMDME9E4yLxI4CRw/+suEYGcL0YE=NmOUnkyrZZ","pos", 3306, query1,query2,query3,query4,query5,query6,query7)
+        const rows = await conn_any.runQueryTembakMany(iptoko,"kasir","D5SgTTMDME9E4yLxI4CRw/+suEYGcL0YE=NmOUnkyrZZ","pos", 3306, query1,query2,query3,query4,query5,query6,query7)
         if(rows === "Gagal"){
-            const rows2 = await zconn.zconnTembakMany(iptoko,"kasir","5CCNQV3rio/dI/iboPPnww9nzUHh8bpac=fU59bpWfE4","pos", 3306, query1,query2,query3,query4,query5,query6,query7)
+            const rows2 = await conn_any.runQueryTembakMany(iptoko,"kasir","5CCNQV3rio/dI/iboPPnww9nzUHh8bpac=fU59bpWfE4","pos", 3306, query1,query2,query3,query4,query5,query6,query7)
             if(rows2 === "Gagal"){
                 return "Gagal"
             }else{
@@ -948,7 +933,7 @@ const insertData = async (kdcab, kdtk, namatoko, data) => {
         }
         
         const queryx = `REPLACE INTO m_rekonsales() VALUES ${dd.toString()}`
-        await zconn.zconnTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
+        await conn_any.runQueryTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
       
         return "Sukses Insert"
     }catch(e){
@@ -970,7 +955,7 @@ const insertDataPromo = async (kdcab, kdtk, namatoko, data) => {
         }
         
         const queryx = `REPLACE INTO m_promo() VALUES ${dd.toString()}`
-        await zconn.zconnTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
+        await conn_any.runQueryTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
       
         return "Sukses Insert"
     }catch(e){
@@ -993,7 +978,7 @@ const insertDataRRAKTrend = async (kdcab, kdtk, namatoko, data) => {
         
         const queryx = `REPLACE INTO rrak_trend() VALUES ${dd.toString()}`
         
-        await zconn.zconnTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
+        await conn_any.runQueryTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
       
         return "Sukses Insert"
     }catch(e){
@@ -1016,7 +1001,7 @@ const insertDataRRAKData = async (kdcab, kdtk, namatoko, data) => {
         
         const queryx = `REPLACE INTO rrak_data() VALUES ${dd.toString()}`
         
-        await zconn.zconnTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
+        await conn_any.runQueryTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
       
         return "Sukses Insert"
     }catch(e){
@@ -1033,7 +1018,7 @@ const insertDataIns = async (data) => {
             dd.push(`('${i.KDCAB}','${i.KDTK}','${i.CLASS_TK}','${i.SUB_CLASS}','${i.SPD}','${i.GROWTH_SPD}','${i.STD}','${i.SPD_RTE_RTD}','${i.SPD_PERISHABLE}','${i.APC}','${i.ISS}','${i.NKLALL}','${i.NKLALL_RP}','${i.NKL_DRY}','${i.NKL_PERISHABLE}','${i.NBR_DRY}','${i.NBR_RTE_RTD}','${i.NBR_PERISHABLE}','${i.GROSS_MARGIN}','${i.SALES_ALL}','${i.SALES_DRY}','${i.SALES_PERISHABLE}','${i.SALES_RTE_RTD}','${i.JML_HARI_BUKA}','${i.STD_RAW}','${i.NBR_RTE_RTD_RAW}','${i.NBR_DRY_RAW}','${i.PERIODE}')`)
         } 
         const queryx = `INSERT IGNORE INTO ins() VALUES ${dd.toString()}`
-        await zconn.zconnTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
+        await conn_any.runQueryTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
       
         return "Sukses Insert"
     }catch(e){
@@ -1053,7 +1038,7 @@ const insertDataAdj = async (kdtk,prdcd) => {
         where kdtk = '${kdtk}' and prdcd = '${prdcd}';
         `
         //console.log(queryx)
-        await zconn.zconnTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
+        await conn_any.runQueryTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
       
         return "Sukses Insert"
     }catch(e){
@@ -1085,31 +1070,25 @@ const insertDataCeknp = async (namafile,data) => {
 } 
 
 
-const insertDataCeknp2 = async (namafile,data) => {
+const insertDataCeknp2 = async (r,data) => {
     try{
          
         const queryx = `
         update ceknp2 set
         npb_d = '${data[0].npb_d}',
+        dc_npbtoko = '${data[0].dc_npbtoko}',
         bukti_tgl = '${data[0].bukti_tgl}',
         no_bpb = '${data[0].no_bpb}',
         qty = '${data[0].qty}',
         gross = '${data[0].gross}'
-        where namafile ='${namafile}';
+        where namafile ='${r.namafile}'
+        and docno = '${r.docno}';
         `
         await conn_ho.query(queryx)
       
         return "Sukses Insert"
     }catch(e){
-        console.log(`
-        update ceknp2 set
-        npb_d = '${data[0].npb_d}',
-        bukti_tgl = '${data[0].bukti_tgl}',
-        no_bpb = '${data[0].no_bpb}',
-        qty = '${data[0].qty}',
-        gross = '${data[0].gross}'
-        where namafile ='${namafile}';
-        `)
+          
         return "Error insert"
     }
 } 
@@ -1263,7 +1242,7 @@ const insertDataWaktu = async (kdcab, kdtk, namatoko, waktu,ket) => {
         waktu='${waktu}', ket = '${ket}',
         tanggal = curdate()`
 
-        await zconn.zconnTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
+        await conn_any.runQueryTembak("192.168.131.71","donny","n3wbi329m3d","zarvi", 3306, queryx)
       
         return "Sukses Insert"
     }catch(e){
@@ -1275,12 +1254,12 @@ const getListCekPosrt = async()=>{
     try {
         
         const query = `select *,CURDATE() AS TANGGAL_LOG, HOUR(CURTIME()) AS JAM from log_posrt where status = 'NOK';`
-        const data = await zconn.zconn("192.168.131.50","edp1","abcd@1234","management_co", 3306, { sql: query ,rowsAsArray: true})
+        const data = await conn_any.runQuery("192.168.131.50","edp1","abcd@1234","management_co", 3306, { sql: query ,rowsAsArray: true})
         
         await conn_local.queryInsert(`INSERT IGNORE INTO log_posrt(TOKO,KDCAB,NAMATABLE,TRXDATE,serverdate,diffminute,STATUS,ADDTIME,TANGGAL,JAM) values ?`, data)
         
         const query2 = `select TOKO,CABANG,TIPE,STOCKOLDATE,serverdate,diffminute,STATUS,ADDTIME,CURDATE() AS TANGGAL_LOG, HOUR(CURTIME()) AS JAM from log_posrt_inventory where status = 'NOK';`
-        const data2 = await zconn.zconn("192.168.131.50","edp1","abcd@1234","management_co", 3306, { sql: query2 ,rowsAsArray: true})
+        const data2 = await conn_any.runQuery("192.168.131.50","edp1","abcd@1234","management_co", 3306, { sql: query2 ,rowsAsArray: true})
         await conn_local.queryInsert(`INSERT IGNORE INTO log_posrt(TOKO,KDCAB,NAMATABLE,TRXDATE,serverdate,diffminute,STATUS,ADDTIME,TANGGAL,JAM) values ?`, data2)
         
         return "Sukses"
@@ -1323,13 +1302,15 @@ const UpdateFlagPosrt = async(kdtk,tanggal,jam,ket)=>{
     }
 }
 
-const getListCekPosrtToko2 = async(tanggal,jam)=>{
+const getListCekPosrtToko2 = async()=>{
     try {
-        const [data] = await conn_ho.query(`select * from cekposrt2 
+        const data = await conn_ho.query(`select *,
+            timestamp(DATE_SUB(tanggalco, INTERVAL 30 MINUTE)) sebelum,
+            timestamp(DATE_add(tanggalco, INTERVAL 30 MINUTE)) sesudah
+        from cekposrt4
         where 
-        ok is null or ok =''
+            ok is null or ok =''
         `)
-         
         return data
 
     } catch (e) { 
@@ -1339,11 +1320,11 @@ const getListCekPosrtToko2 = async(tanggal,jam)=>{
 
 const UpdateFlagPosrt2 = async(kode,ket)=>{
     try {
-        await conn_ho.query(`update cekposrt2 
+        await conn_ho.query(`update cekposrt4 
         set ket = '${ket.replace("/'/g",'')}',
         ok='OK'
         where 
-        kdtk ='${kode}';
+        noco ='${kode}';
         `)
          
         return "Sukses"
