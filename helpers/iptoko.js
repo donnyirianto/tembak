@@ -7,22 +7,28 @@ const bykdcab =  async(kdcab) => {
       "IN_KODE_CABANG": `${kdcab}`, "IN_KODE_TOKO":"","IN_STATION": ""
     }
     const results = await axios.post('http://172.24.52.3:4646/user/GET_Tokomain', payload)
-    
-    return results.data
+    const resp = {
+      data : JSON.parse(results.data.data)
+    }
+    return resp
    } catch(err) {  
      return "Gagal"     
   } 
   
 }
 
-const bykdtk =  async(kdcab,kdtk) => {
+const bykdtk =  async(kdtk) => {
   try {
     const payload = {
-      "IN_KODE_CABANG": `${kdcab}`, "IN_KODE_TOKO":`${kdtk}`,"IN_STATION": "01"
+      "IN_KODE_CABANG": ``, "IN_KODE_TOKO":`${kdtk}`,"IN_STATION": "01"
     }
-    const results = await axios.post('http://172.24.52.3:4646/user/GET_Tokomain', payload)    
-    return results.data
+    const results = await axios.post('http://172.24.52.3:4646/user/GET_Tokomain', payload)
+    const resp = {
+      data : JSON.parse(results.data.data)
+    }
+    return resp
    } catch(err) {  
+    
      return "Gagal"     
   } 
   

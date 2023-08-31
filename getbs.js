@@ -1,6 +1,6 @@
 var cron = require('node-cron');
 const dayjs = require('dayjs');
-const Models = require('./modelsnew/model')
+const Models = require('./models/model')
 const Ip = require('./helpers/iptoko')
 
 console.log("Service Start")    
@@ -8,9 +8,7 @@ console.log("Service Start")
 const cekToko = async () => {
   try {    
     
-    const start = dayjs().format("YYYY-MM-DD HH:mm:ss");
-    const tanggal = dayjs().format("YYYY-MM-DD")
-    const jam = dayjs().format("HH")
+    const start = dayjs().format("YYYY-MM-DD HH:mm:ss"); 
 
     console.log("Running Check Toko : " + start)    
     
@@ -18,25 +16,33 @@ const cekToko = async () => {
     
     list.forEach( async (r) => { 
         
-        var queryCheck =`select 
-        *,(select kirim from toko)  as KDCAB,
-        (select toko from toko ) as TOKO,
-        '2022-11-17' AS TANGGAL
-        from bs20221117${r.kdtk.substring(0,1)}` 
+      const queryCheck =`SELECT 
+      (SELECT KIRIM FROM TOKO) AS KDCAB,
+      (SELECT TOKO FROM TOKO) AS TOKO,
+      '2023-08-21' AS TANGGAL,
+      RECID,TIPERAK,NORAK,NOSHELF,KIRIKANAN,\`DIV\`,PRDCD,\`DESC\`,SINGKAT,BARCODE,BARCODE2,FRAC,UNIT,PTAG,CAT_COD,BKP,SUB_BKP,CTGR,KEMASAN,ACOST,LCOST,RCOST,PRICE,TTL,TTL1,TTL2,COM,HPP,SOID,EDIT,SOTYPE,SOTGL,SOTIME,ADJDT,ADJTIME,DRAFT,DCP,CTK
+      From BS20230821${r.kdtk.substring(0,1)}`
+
       //const dataip =  await Ip.bykdtk(r.kdcab,r.kdtk);
       
       //if(dataip != "Gagal" && dataip.data.length > 0){
         
         const rv = await Models.vquery(r.ip1, queryCheck)
         
-        if(rv === "Gagal" ){
+        if(rv.status === "NOK" ){
           
-          console.log(r.kdcab +'|'+ r.kdtk +'|Gagal Koneksi') 
+          console.log(r.kdcab +'|'+ r.kdtk +'|gagal') 
           //await Models.UpdateFlagPosrt(r.TOKO,tanggal,jam,`Koneksi Timeout`)
 
         }else{ 
-          await Models.UpdateFlagBS(rv)
-          console.log(r.kdcab +'|'+ r.kdtk +'|Sukses') 
+          if(rv.data.length > 0){
+            await Models.UpdateFlagBS(rv.data)
+            console.log(r.kdcab +'|'+ r.kdtk +'|Sukses') 
+          }else {
+            
+            console.log(r.kdcab +'|'+ r.kdtk +'|Sukses| Tidak Ada Data') 
+          }
+          
         }
 
      /*  }else{

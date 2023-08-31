@@ -1,5 +1,5 @@
 const fs = require('fs'); 
-const Models = require('./modelsnew/model')  
+const Models = require('./models/model')  
 
 const deleteFile = (filePath) => {
   // Unlink the file.
@@ -36,15 +36,15 @@ const doitBro = async () => {
         (select kirim from toko) as kdcab,
         (select toko from toko) as toko,
         (select nama from toko) as nama,
-        (select tgl from tracelog where date(tgl) = '2023-02-27' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan Set_LastTransferAuto' limit 1) as start_trf_data,
-        (select tgl from tracelog where date(tgl) = '2023-02-27' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan UpdateConstDT1' limit 1) as finish_trf_data;
+        (select tgl from tracelog where date(tgl) = '2023-08-31' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan Set_LastTransferAuto' order by tgl desc limit 1) as start_trf_data,
+        (select tgl from tracelog where date(tgl) = '2023-08-31' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan UpdateConstDT1' order by tgl desc limit 1) as finish_trf_data;
 `
         const rv = await Models.vquery(r.ip1, queryTembak2)
           
-          if(rv === "G" || rv === "Gagal" ){
+          if(rv.status === "NOK" ){
             console.log(r.kdtk +'|'+ r.kdcab +'|Gagal data') 
           }else{
-            const a = JSON.stringify(rv).replace(/[\]\[]/g,"") 
+            const a = JSON.stringify(rv.data).replace(/[\]\[]/g,"") 
             //const c = a.replace(/[}{]/g,"")
            
             fs.appendFile('data.txt',a, errx => {

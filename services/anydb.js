@@ -15,12 +15,14 @@ const runQuery = async (host,user,password,database,port, queryx) => {
       const conn =  await mysql.createConnection(dbnya);  
       const [result] = await conn.query(queryx)
       conn.end()
+      
       return {
         status: "OK",
         data:result
       }
     
   } catch (error) { 
+    
     return {
       status: "NOK",
       data: error

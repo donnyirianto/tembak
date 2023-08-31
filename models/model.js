@@ -1,5 +1,6 @@
 const conn_local = require('../services/db');
-const conn_iris = require('../services/db2');
+const conn_new = require('../services/dbho2');
+const conn_50 = require('../services/db50');
 const conn_ho = require('../services/dbho');
 const conn_any = require('../services/anydb'); 
 const ftp = require('../services/ftp'); 
@@ -11,7 +12,7 @@ ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm
 dan 
 5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB
 ---- user kasir 2022 ----
-goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG
+mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi
 --------------------------------
 kasir Lama
 cL/EohOGyT3uPR/HmG9zSpHt6/V8zPQKs=VunZtrQfh1
@@ -23,10 +24,35 @@ root1
 5CCNQV3rio/dI/iboPPnww9nzUHh8bpac=fU59bpWfE4
 root2
 N8rM5RmJYbKGbEFWuvuSb6bauDFB3BPTc=zOMd2onoNJ
- */
-const getListIp = async (query) => {
+ 
+'G004','G030','G025','G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224','G236','G237'
+and toko in('T07W','T0IA','T0KG','T0KO','T0O8','T0P7','T0QX','T0TO','T0UB','T0UY','T0VA','T0Y1','T0YL','T0Z4','T19T','T1F4','T1G1','T1GT','T1JH','T1KT','T1L1','T1ON','T1SQ','T1TL','T1UW','T1V9','T1WS','T2B2','T2EX','T2FU','T2GY','T2JW','T2KM','T2M5','T2NT','T2OE','T2RE','T2T6','T2VR','T2WT','T2WX','T2YZ','T2Z9','T3AX','T3DV','T3ES','T3G0','T3NS','T3PP','T3X7','T3YV','T3ZC','T433','T454','T47C','T47S','T4F9','T4IT','T4N1','T4N9','T4OG','T4R8','T4VV','T4WJ','T4WQ','T4X1','T4X2','T4ZW','T53I','T5A2','T5EO','T5EY','T5HD','T5N5','T5NB','T5R3','T5SO','T5W9','T5Y6','T5YG','T6AH','T6DC','T6DH','T6E0','T6FQ','T6GG','T6I3','T6RD','T6RV','T6VC','T6W9','T6X1','T74S','T79P','T7AZ','T7BO','T7FK','T7HY','T7I4','T7RU','T7SR','T7TW','T7VI','T7X0','T7XJ','T7XQ','T7ZK','T82P','T82S','T82W','T84M','T89S','T8LG','T8MI','T8NI','T8QA','T8S5','T8SD','T8TH','T8WT','T90V','T92I','T9D7','T9G3','T9G6','T9KC','T9KY','T9LR','T9MW','T9OK','T9OP','T9RH','T9ZH','TA0D','TABE','TAFH','TAKU','TALH','TAO4','TATG','TAUC','TAUR','TAX0','TAZ6','TB0U','TB1C','TB4E','TB4R','TBCX','TBG7','TBGF','TBGV','TBK1','TBND','TBNF','TBP5','TBPS','TBQM','TBTI','TBUX','TBYV','TBZC','TBZF','TC0Z','TC8O','TC8T','TCAF','TCDK','TCEZ','TCGA','TCJ9','TCM9','TCPF','TCQ9','TCR7','TCUQ','TCX3','TCY6','TCZ0','TD2Y','TD4R','TDBD','TDDB','TDF8','TDHB','TDI8','TDJ1','TDNW','TDPS','TDT5','TDUV','TDWM','TE1Y','TE6N','TE9I','TEG5','TEK2','TEL7','TENI','TERM','TERT','TEVU','TEYX','TF2I','TF3F','TF7T','TF8N','TFBI','TFFJ','TFFX','TFIG','TFLW','TFNU','TFPB','TFPR','TFQ3','TFSE','TFW5','TFWN','TFXL','TFZD','TG1Q','TG2D','TG5D','TG6T','TGAQ','TGD0','TGHM','TGOS','TGPF','TGRU','TGSG','TGSO','TGUI','TGUN','TGV1','TGXA','TH1V','TH5X','THFA','THKD','THKM','THLQ','THM9','THOD','THRW','THXA','THZP','TI0J','TI32','TI3D','TI9U','TIDY','TIFP','TIHU','TIJE','TIJF','TIVY','TJ6H','TJA7','TJG3','TJKL','TJRY','TJS8','TJUV','TJY0','TK4E','TK5O','TKCR','TKF5','TKKM','TKLC','TKOC','TKWP','TKYK','TL2M','TL5R','TL7Q','TLBM','TLHT','TLLK','TLN2','TLNE','TLRM','TLX1','TLYU','TM4I','TM62','TMDU','TMET','TMNX','TMOR','TMSL','TMWS','TN21','TN4R','TN4Z','TNAP','TNBZ','TNEM','TNEO','TNII','TNIL','TNMS','TNS3','TNY2','TO2V','TO5D','TO5X','TO6J','TO71','TOBJ','TODA','TODK','TOGS','TOHC','TOQF','TORB','TOWH','TOZW','TP0R','TP9O','TPAU','TPID','TPQ5','TPUS','TPV0','TPV6','TPX8','TQ1L','TQ2Z','TQ5F','TQBY','TQCV','TQDW','TQGF','TQHC','TQIC','TQIY','TQL9','TQTP','TQUO','TQXL','TR3C','TR4Y','TR8S','TRAO','TRCZ','TRE8','TRF6','TRH2','TRPQ','TRRE','TS7P','TS8D','TSAF','TSBP','TSDU','TSE1','TSFD','TSFR','TSI6','TSKL','TSOZ','TSP9','TSPD','TSUV','TSVF','TSW3','TSXL','TSY7','TT1F','TT4E','TT6R','TT9M','TTA3','TTAT','TTAZ','TTED','TTJ7','TTK0','TTLD','TTZQ','TU7F','TUAZ','TUD7','TUE5','TUG0','TUHE','TUIB','TUN4','TUOC','TUP3','TUQG','TUR6','TUSJ','TUW3','TUWA','TUXD','TUZ0','TV0Y','TV1O','TV3U','TVEE','TVEW','TVJX','TVQR','TVRB','TVRR','TVW6','TVWB','TVX2','TW18','TW4O','TW4T','TW51','TW87','TWDF','TWFM','TWFU','TWGD','TWGJ','TWIK','TWJ4','TWLK','TWNT','TWQU','TWSG','TWX0','TWZA','TWZE','TWZJ','TX3U','TXOD','TXQ9','TXSQ','TXWC','TXXX','TXY9','TXYX','TY67','TY7M','TY95','TYBS','TYHG','TYI4','TYJO','TYKP','TYKY','TYQH','TYQW','TYVW','TYVY','TYYB','TZM4','TZM8','TZMD','TZRQ','TZRX','TZS8','TZYA')
+*/
+const getListIp = async () => {
     try{
-    const [rows] = await conn_ho.query(query)
+    const rows = await conn_ho.query(`
+        select kdcab,toko as kdtk,ip_induk as ip1 from m_toko_ip
+        where kdcab in(select kdcab from m_server_iris where jenis='iris' and reg='reg4')
+        AND left(toko,1) not in('B','G','D')
+        and toko in('T3ZC','T08A','F25C','FECI','TUN8','TUQN','FTSH','T5YG','TCOD','T3J5','T1HJ','TBD7','TFUF','TMAA','TDD7','TMLI','TGPQ','T41G','T0P7','T0IZ','TY3R','T0NA','TP4Z','FXOX','F6KG','T9AK','TYEO','TPVA','TC04','T3PP','TBIU','TGBB','T637','TGVK','THI3','TDQI','THW2','TU60','TXBB','TMGD','TRSA','T4IU','TJE8','TVZF','TC4R','TY5X','T8YH','TMRQ','T2M2','TEH1','TC7L','T3C5','TACI','TAUN','T8A5','T7JA','T31B','FF52','FYCC','T0ZK','FYFM','FRIQ','T4Q1','T4PE','TKPD','T0ZI','FY7G','TTAG','TQOR','TS46','TUD8','TU5D','TUEW','TMR4','TG7Z','T4OC','T9N3','TMK0','F7EY','TQH5','T1AI','FIT4','TXGC','T0HQ','T0TD','TW7X','TWCL','TU3J','T5HN','TGL5','T2US','THAD','TNRX','TN3X','TNLV','FBUM','TIZP','TNS7','TB7V','THQQ','THK1','TH7H','TDET','T4N9','TISY','T7DJ','FI3B','TUKK','TSYS','TWOD','TWYS','FI1W','FLK6','F2MG','T4AA','F4SD','FOFF','FIKI','FMAE','TKIU','TIB4','THKK','TTGU','T7NW','T0Z4','TRPM','TRRM','TZTD','TVAK','TOYY','TN5A','T3WM','TR1Z','TPMN','T6A2','TYE7','T1NL','TYNG','TXUX','TZZB','TVQD','TVFP','TUIB','TTLD','TUPG','TRNF','T2T6','T1G1','TMNX','TAFH','TYBS','T6I3','TCPF','T3F7','TDRE','T0IO','TFYA','TMTR','TCCM','TQ1R','TNPY','TZAP','TTK0','TDJ1','TASY','TFXL','TQ3G','TVJX','TWZJ','T4X1','TEFS','T9G3','TPLK','TFPR','TLNE','TTVC','TTED','TAX5','TFDD','TCNZ','TAHX','TAMB','TUWA','TRO1','TAUK','TLOB','TEVE','TEAR','TVUZ','TBQ6','TDPI','TVHA','TMNT','TFI7','T0LS','TMPU','TQ7P','TEER','TM06','TRMS','TKKK','TFTI','TRC2','TEFO','TLES','TE0K','TMUK','T7XJ','TKWW','T0UR','TNEZ','TONU','TARM','TRON','TESD','TSUK','T8VI','TQLA','TJCG','TK8P','TRKC','T1V9','TF7K','TY1B','TSP7','TPR4','TRFR','FIRD','TBZK','TDYY','TFMT','TAON','TXN7','TQ5F','TBRS','TRLG','T4ZW','T8RK','TSHM','TIIQ','F97Q','TRHK','TOHU','KPI','T2S0','FMGB','TMMM','TTCA','TCUK','T0L1','THGC','TKT4','TM8S','F2ZC','FU8C','THUV','TCDN','T91E','TUD3','TEOT','TR3S','TETE','TDGY','TW5N','FLN0','T0GL','TXTU','FWBY','TRGU','T0SQ','F0UU','TWJ8','T5WE','F17F','FCT0','FN7J','T2DC','TB43','TLJ0','TWEZ','TY37','TMET','TNS3','TVX2','FAI9','TRPH','FFRI','T0YF','T7N8','TACY','TQH3','TTGO','TU6Q','TBUX','FRUQ','TCSH','TDR3','TEPT','TTAJ','TCLP','FAM6','TC2Q','TV5I','TRL4','FBV4','FIGT','TYZX','TMXX','F8YX','TEUM','TQ24','TSUM','TTIH','TIWC','FA7Q','TWG4','TERZ','FAIV','TNOP','T0A3','FEEI','FC45','T5W6','TGCJ','TRUW','TOC1','FSUF','FPH9','FISH','TENE','TGHK','FL4L','F7Q6','TAIT','F2MD','TXK7','TQ87','TS7X','FT5N','TYPA','TIQI','TJE6','TTW0','TL7C','TJBM','TQQQ','TXJN','FQUA','TO3E','TTHV','FOU0','TUDU','TQ97','TOBI','TDMQ','F2SD')
+    `)
+       
+        return rows
+    }catch(e){
+        return "Error"
+    }
+} 
+
+const insertHasilFT = async (data) => {
+    try{
+        let u = data.map((r)=>{
+            return `('${r.kdcab}','${r.toko}','${r.prdcd}','${r.ft_ho}')`
+        })
+
+        const rows = await conn_local.query(`insert ignore into 
+        acuan_ft(kdcab,kdtk,prdcd,ft_toko)
+        values ${u.join(",")}
+        `)
        
         return rows
     }catch(e){
@@ -34,6 +60,41 @@ const getListIp = async (query) => {
         return "Error"
     }
 } 
+const getListIpRetur = async () => {
+    try{
+    const rows = await conn_ho.query(`
+        select a.toko,b.ip_induk as ip1,a.rtype,a.docno,a.prdcd,a.tanggal 
+        from hapusnrb a
+        left join m_toko_ip b on a.toko = b.toko
+        where ket is null or ket !='Y'
+    `)
+       
+        return rows
+    }catch(e){
+        return "Error"
+    }
+}
+const UpdateRetur = async (r) => {
+    
+     
+    try{
+    await conn_ho.query(`
+        update hapusnrb 
+        set ket = 'Y'
+        where 
+        toko ='${r.toko}'
+        and docno='${r.docno}'
+        and tanggal='${r.tanggal}'
+        and prdcd='${r.prdcd}'
+        and rtype='${r.rtype}'
+    `)
+     
+        return "Sukses"
+    }catch(e){
+        
+        return "Error"
+    }
+}  
 const getListIpSpdmast = async () => {
     try{
             
@@ -132,26 +193,7 @@ const getListIpLocal = async () => {
     }
 } 
 
-const getListIpRetur= async () => {
-    try{
-       //where kdcab in('G097','G174','G030','G177','G158')
-       
-       //where kdtk in('F0XP','FDBP','FERZ','TB05') 'TT43','TD49','TIID'
-        const [rows] = await conn_local.query(`
-        select
-            a.kdtk,a.prdcd,b.kdcab,b.ip1,a.status_retur
-            from zarvi.acuan_retur a
-            left join zarvi.ip b on a.kdtk =b.kdtk
-            where
-            b.ip1 is not null 
-        `)
-        //('FJJI','FQ34','TAKG','FBIB','TMAZ','FERZ','FFG7','FGJJ','TTSN','FUXR','T41R','TASM','TMKT','FEPF','TKVY','TYEO','TC49','TN9Z','TRU7','F6JK','FOOE','TOFJ','FPME','T3QG','TN9M','T0YF')
-        return rows
-    }catch(e){
-        console.log(e)
-        return "Error"
-    }
-}  
+ 
  
 const getListIpIkiosk = async () => {
     try{
@@ -180,7 +222,7 @@ const getListIpIris = async () => {
        
         const rows = await conn_ho.query(`
         select * from m_server_iris
-        WHERE jenis = 'IRIS' and reg='REG4'
+        WHERE jenis = 'IRIS' 
         `)
         //('FJJI','FQ34','TAKG','FBIB','TMAZ','FERZ','FFG7','FGJJ','TTSN','FUXR','T41R','TASM','TMKT','FEPF','TKVY','TYEO','TC49','TN9Z','TRU7','F6JK','FOOE','TOFJ','FPME','T3QG','TN9M','T0YF')
         return rows
@@ -482,17 +524,19 @@ const getListIpRrak = async (kdcab) => {
 const getListIpInitial = async (kdcab) => {
     try{
         //'G004','G025','G030','G034','G097','G146','G148','G149','G158','G174','G177','G301','G305') 
-        const [rows] = await conn_ho.query(`
+        const rows = await conn_ho.query(`
             SELECT * FROM m_toko_ip 
             WHERE kdcab in (${kdcab})
-            AND toko NOT IN(SELECT KDTK FROM INITIAL WHERE KDCAB IN(${kdcab}) )
+            AND toko NOT IN(SELECT KDTK FROM INITIAL WHERE tanggal=curdate() and KDCAB IN(${kdcab}) )
             and left(TOKO,1) not in('D','B')
             and nama not like 'event%'
             and nama not like 'i-mobil%'
+            and nama not like '%pancingan%'
         `) 
+        
         return rows
     }catch(e){
-        console.log(e)
+        
         return "Error"
     }
 }
@@ -561,7 +605,7 @@ const getListIpCeknp = async () => {
 const getListIpCeknp2 = async () => {
     try{
        //where kdcab in('G097','G174','G030','G177','G158')
-        const [rows] = await conn_ho.query(`
+        const rows = await conn_ho.query(`
         select a.kdcab,a.kdtk,left(namafile,19) as namafile_pilih,a.namafile,docno,
         b.ip_induk
         from ceknp2 a 
@@ -675,7 +719,7 @@ const getListIpPco = async () => {
         const [rows] = await conn_ho.query(`
         select kdcab, toko as kdtk,nama, ip_induk as ip1 from m_toko_ip
         WHERE LEFT (TOKO,1) NOT IN('D','G')
-        and toko in('T60T','T61Q','TBAT','TBJI','TDYI','TJAG','TKLK','TOFL','TRDE','TUCX','TUHT','FKHP','T56Q','T9HH','TAUN','THHD','TQ16','TT43','TVS9','TYFR','F3W7','FAAD','FIJJ','FJHJ','FTOH','T1X2','TF6V','THT2','TLID','TQCW','FDKK','T2MN','T3N5','T5CR','TEFY','TN9Z','TY55','TY80','TNOP','TY95','F69C','FAIJ','FLLB','FN8D','T0TD','T107','T1AI','T7MH','TAIR','TKDN','TREM','TRSC','TS0G','TT66','T1LU','T23F','T84F','T9FS','TCV6','TEAL','TF58','TF75','TP4P','TYWE','FGMN','FNHD','FOSL','T42R','TART','TDME','TDXW','TNOP','TQLZ','TTSD','FGC6','FMI9','FWBG','T11F','T3KH','T3WJ','TEKK','TGPX','THH5','TR7G','TRPH','TVZQ','TXIE','TZZW')
+        and toko in('T60T','T61Q','TBAT','TBJI','TDYI','TJAG','TKLK','TOFL','TRDE','TUCX','TUHT','FKHP','T56Q','T9HH','TAUN','THHD','TQ16','TT43','TVS9','TYFR','F3W7','FAAD','FIJJ','FJHJ','FTOH','T1X2','TF6V','THT2','TLID','TQCW','FDKK','T2MN','TEFY','TN9Z','TY55','TY80','TNOP','TY95','F69C','FAIJ','FLLB','FN8D','T0TD','T107','T1AI','T7MH','TAIR','TKDN','TREM','TRSC','TS0G','TT66','T1LU','T23F','T84F','T9FS','TCV6','TEAL','TF58','TF75','TP4P','TYWE','FGMN','FNHD','FOSL','TART','TDME','TDXW','TNOP','TQLZ','TTSD','FGC6','FMI9','FWBG','T11F','T3KH','T3WJ','TEKK','TGPX','THH5','TR7G','TRPH','TVZQ','TXIE','TZZW')
         `)
         return rows
     }catch(e){
@@ -686,10 +730,12 @@ const getListIpPco = async () => {
 const getListIpNonPco = async () => {
     try{
         //'G025','G030','G034','G097','G146','G148','G149','G158','G174','G301','G305') 
-        const [rows] = await conn_ho.query(`
+        const rows = await conn_ho.query(`
         select kdcab, toko as kdtk,nama, ip_induk as ip1 from m_toko_ip
-        WHERE LEFT (TOKO,1) NOT IN('D','G') and kdcab not in('G117')
-        and toko in('T92S')    
+        WHERE LEFT (TOKO,1) NOT IN('D','G') 
+        and kdcab in ('G004','G030','G025','G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224','G236','G237')
+        and toko in('F79G','F7Q9','FD6X','FIVI','FNBU','FOO7','T9NN','TDD7','TGSC','TIIQ','TKLJ','TTOB','TWEU','TWUN','F3BZ','F404','FQRW','T1LG','T8GB','T8YR','TACS','TADA','TKIO','TRLU','TRSA','TT1K','TVVQ','TRKM','FM0W','FMQO','T4GA','TBSE','TF7K','THO1','TJCG','TPJ6','TPN9','TSP7','TTRP','TUN8','TVQU','TXUN','TXXQ','TYLR','TZLG','FSRY','T50W','TAHI','TR6O','TZ6L','F43H','F1GO','TNOG','F2C0','TTRH','TSWH','FS2O','TCXF','FA9J','TDMX','TGDC','FNB1','TV8U','FYDW','TVX7','T55T','TSOZ','TF7T','TF3F','TQTP','TVEW','TAZ6','F5N6','F7XK','FLZ0','FUXS','FZHN','T3QQ','T9RE','T9W9','TGIF','TH1S','THLF','THPA','TPXQ','TPXS','TX0W','F38Y','F7G4','FC0W','FFSR','FMNQ','T25O','T4BC','T65P','T67H','T6M1','T79N','T9MA','TAPG','TBQK','TF64','TI9R','TJPU','TLSD','TM7U','TMVB','TTN4','TW7U','TYP1','F5LI','F7PV','FANN','T00V','T1CS','TEKA','TP2S','TTZZ','TZWC','FZ7Y','T7PS','TBMS','TCMX','TLPX','TPMN','TR1Z','TS2C','TYJP','F0KM','FBE8','FDLB','FPJ6','FW8I','FY9Y','T2PX','T44R','T6XP','T70M','TD8E','TDKV','TDTZ','THKI','TOMB','TONS','TPWQ','TQMR','TSOP','TXDN','FMTM','T2JJ','T4EK','T9BN','TBDA','TBER','TCBE','THYX','TJBV','TLXY','TOFJ','TSDO','FPME','T6UI','TDSR','TG6P','TGQ8','TJNJ','TLF0','TM4I','TN9M','TQA2','TRRA','TTCP','TYYB','T1TL','T3ES','T4N1','T4WQ','T6DH','TCM9','TR8S','TRAO','TNMS','T7XJ')
+        
         `)
         
         return rows
@@ -760,37 +806,12 @@ const vqueryIkios = async (iptoko, param) => {
     }
 } 
 
-const vquery = async (iptoko, param) => {
-    try{
-        
-        const rows = await conn_any.runQuery(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
-        
-        if(rows.status === "NOK"){
-            const rows2 = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
-            if(rows2.status === "NOK"){
-                const rows3 = await conn_any.runQuery(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)   
-                if(rows3.status === "NOK"){
-                    return "Gagal"
-                }else{
-                    return rows3
-                }                
-            }else{
-                return rows2
-            }
-        }else{
-            
-            return rows
-        }
-        
-    }catch(e){  
-        return "Gagal error"
-    }
-} 
+
 
 const vquerySpdmast = async (iptoko, param) => {
     try{
         
-        const rows = await conn_any.runQueryTembak(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
+        const rows = await conn_any.runQueryTembak(iptoko,"kasir","mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi","pos", 3306, param)
         
         if(rows === "Gagal"){
             const rows2 = await conn_any.runQueryTembak(iptoko,"kasir","cL/EohOGyT3uPR/HmG9zSpHt6/V8zPQKs=VunZtrQfh1","pos", 3306, param)
@@ -813,13 +834,16 @@ const vquerySpdmast = async (iptoko, param) => {
 
 const vqueryTembak = async (iptoko, param) => {
     try{ 
-        const rows = await conn_any.runQueryTembak(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
-        if(rows === "Gagal"){
-            const rows2 = await conn_any.runQueryTembak(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
-            if(rows2 === "Gagal"){
-                const rows3 = await conn_any.runQueryTembak(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)
-                if(rows3 === "Gagal"){
-                    return "Gagal"
+        
+        const rows = await conn_any.runQuery(iptoko,"kasir","mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi","pos", 3306, param)
+        if(rows.status === "NOK"){
+            const rows2 = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
+            if(rows2.status === "NOK"){
+                const rows3 = await conn_any.runQuery(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)
+                if(rows3.status === "NOK"){
+                    return {
+                        status: "NOK"
+                    }
                 }else{
                     return rows2    
                 }
@@ -831,33 +855,50 @@ const vqueryTembak = async (iptoko, param) => {
         }
         
     }catch(e){ 
-        console.log(e)
-        return "Gagal all"
+        return {
+            status: "NOK",
+            data: e
+        }
     }
 } 
 
 const vqueryTembakIris = async (ip,user,pass,db, param) => {
     try{ 
         const rows = await conn_any.runQuery(ip,user,pass,db, 3306, param)
-        if(rows === "Gagal"){ 
-            return "Gagal"  
-        }else{
-            return rows
-        }
+         
+        return rows
+        
         
     }catch(e){ 
-        //console.log(e)
-        return "Gagal"
+        console.log(e)
+        return {
+            status:"NOK",
+            data: e
+        }
     }
 } 
 
-
+const queryIris = async (ip,user,pass,db, param) => {
+    try{ 
+        const rows = await conn_any.runQuery(ip,user,pass,db, 3306, param)
+         
+        return rows
+        
+        
+    }catch(e){ 
+        console.log(e)
+        return {
+            status:"NOK",
+            data: e
+        }
+    }
+} 
 const vquerycheckpass = async (iptoko, param) => {
     try{
        
         const rows = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
         if(rows === "Gagal"){
-            const rows2 = await conn_any.runQuery(iptoko,"kasir","goCkeKArFYJYqmN9DHS/Uyn1HGgFpqrVI=REgE+tC2ZG","pos", 3306, param)
+            const rows2 = await conn_any.runQuery(iptoko,"kasir","mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi","pos", 3306, param)
             if(rows2 === "Gagal"){
                 const rows3 = await conn_any.runQuery(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)
                 if(rows3 === "Gagal"){
@@ -1081,8 +1122,7 @@ const insertDataCeknp2 = async (r,data) => {
         no_bpb = '${data[0].no_bpb}',
         qty = '${data[0].qty}',
         gross = '${data[0].gross}'
-        where namafile ='${r.namafile}'
-        and docno = '${r.docno}';
+        where namafile ='${r.namafile}';
         `
         await conn_ho.query(queryx)
       
@@ -1117,7 +1157,7 @@ const insertDataPersiapanClossing = async (kdcab, kdtk, namatoko, data) => {
 } 
 
 
-const insertDataInitial = async (kdcab, kdtk, namatoko, data) => {
+const insertDataInitial = async (data) => {
     try{
         //'G025','G030','G034','G097','G146','G148','G149','G158','G174','G301','G305') 
         
@@ -1125,18 +1165,29 @@ const insertDataInitial = async (kdcab, kdtk, namatoko, data) => {
         for(const i of data) {     
             
             dd.push(`('${i.kdcab}' ,'${i.kdtk}', '${i.nama_toko}',
-              '${dayjs(i.TANGGAL).format("YYYY-MM-DD")}','${i.STATION}',
+              '${i.TANGGAL}','${i.STATION}',
               '${i.SHIFT}','${i.NIK}','${i.KASIR_NAME}','${i.TRN_START}','${i.TOTAL_SHIFT}','${i.STRUK_AWAL}',
-              '${i.TOTAL}')`)
+              '${i.TOTAL}','SUKSES')`)
         }
         
         const queryx = `REPLACE INTO initial() VALUES ${dd.toString()}`
         await conn_ho.query(queryx)
         
         return "Sukses Insert"
-    }catch(e){
-        console.log(data)
-        console.log(e)
+    }catch(e){ 
+        
+        return "Error insert"
+    }
+} 
+
+const UpdateDataInitial = async (kdcab,kdtk,nama) => {
+    try{        
+        const queryx = `INSERT IGNORE INTO INITIAL SET keterangan='GAGAL', kdcab='${kdcab}',kdtk='${kdtk}',nama='${nama}',tanggal=curdate();`
+        await conn_ho.query(queryx)
+        
+        return "Sukses Insert"
+    }catch(e){ 
+        
         return "Error insert"
     }
 } 
@@ -1305,11 +1356,13 @@ const UpdateFlagPosrt = async(kdtk,tanggal,jam,ket)=>{
 const getListCekPosrtToko2 = async()=>{
     try {
         const data = await conn_ho.query(`select *,
-            timestamp(DATE_SUB(tanggalco, INTERVAL 30 MINUTE)) sebelum,
-            timestamp(DATE_add(tanggalco, INTERVAL 30 MINUTE)) sesudah
-        from cekposrt4
+        timestamp(DATE_SUB(tanggal_lunas , INTERVAL 30 MINUTE)) sebelum,
+        tanggal_terima as tanggalco
+        from cekposrt2
         where 
-            ok is null or ok =''
+            (ok is null or ok ='')
+            and left(kdtk,1) !='G' 
+            and kdtk ='tv73'
         `)
         return data
 
@@ -1320,11 +1373,12 @@ const getListCekPosrtToko2 = async()=>{
 
 const UpdateFlagPosrt2 = async(kode,ket)=>{
     try {
-        await conn_ho.query(`update cekposrt4 
+        
+        await conn_ho.query(`update cekposrt2
         set ket = '${ket.replace("/'/g",'')}',
         ok='OK'
         where 
-        noco ='${kode}';
+        kodepsan ='${kode}';
         `)
          
         return "Sukses"
@@ -1382,20 +1436,19 @@ const UpdateFlagPosrt3 = async(data)=>{
 const getListBs = async () => {
     try{ 
         //'g004','g030','g025','G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224','g236','g237'
-       const [rows] = await conn_ho.query(`
-        select TOKO as kdtk, nama, kdcab, ip_induk as ip1, ip_anak1 as ip2,IP_STB  from m_toko_ip
+       const rows = await conn_ho.query(`
+        select TOKO as kdtk, nama, kdcab, ip_induk as ip1
+        from m_toko_ip
         WHERE LEFT (TOKO,1) NOT IN('D','G','W','B','R')
         and ip_induk not like '%192.168%'
-        and kdcab in('G034','G030','G177')
-        and toko not in(select toko from bs WHERE TANGGAL='2022-11-17')
-        and toko in('TMMM','TQXD')
-        
+        and toko in('TMLB','TLNE','T8KP','TV2H','TV0M','TFYM')
         `)
-        //and toko in('F2BK','F3EW','F3QQ','F55L','F5II','F5KK','F5LI','F5NN','F6KP','F78A','F95S','FAGN','FAIS','FASI','FB0G','FBAS','FBBE','FC45','FC5Q','FCZ5','FE70','FEEI','FETS','FEVA','FFD8','FFLG','FFOA','FGLC','FHEN','FHLZ','FI1W','FIGT','FKEZ','FLEE','FLK6','FLUT','FP01','FQUA','FR6T','FSOE','FSSU','FSUC','FT5N','FTFD','FTTV','FTUH','FUDU','FYAK','FYCA','T0AL','T0OP','T14A','T15A','T1MN','T301','T3AA','T44N','T55Y','T6E2','T70T','T7VV','T86C','T8BU','T8LJ','T93Y','T95O','T9AL','TA44','TA4A','TA6A','TAUH','TBIU','TCUW','TCVZ','TDNO','TDR0','TDWD','TEHZ','TESF','TETU','TF70','TF83','TFFV','TGTF','TGYK','THAK','THKK','TI66','TIBA','TIT4','TJOJ','TJQR','TK66','TKAF','TKIU','TL6C','TL7C','TLA3','TLA5','TLA6','TLBL','TLID','TMCS','TMPO','TMPP','TNPG','TOAN','TOCF','TOPH','TOSP','TOTJ','TPHE','TQ12','TQ13','TQ22','TQ28','TQ30','TQ33','TQ45','TQ5Q','TQ65','TQ75','TQ89','TQ90','TQCW','TQCY','TQQQ','TR0F','TR2F','TRUW','TSAB','TSEV','TTTQ','TTXS','TUKP','TUTZ','TVCI','TVR7','TVUK','TW0W','TWTW','TWUQ','TXXC','TYZX','TZ0Y','TZQQ','TZWC','F5DF','FAY3','FCBJ','FDQE','FDSE','FEDO','FEFY','FEPL','FFYF','FFZP','FHBD','FHHP','FILC','FINO','FITL','FNHD','FRRT','FRS4','FRYR','FSKY','FSSB','FSSI','FSSM','FSZC','FUFR','FW8I','FXVO','FZIJ','T02R','T02T','T08R','T0M7','T20R','T23R','T24R','T28R','T32R','T34R','T42R','T44R','T47R','T49R','T7TT','T7UW','TAAG','TAFB','TAPR','TARO','TART','TAYW','TAZU','TBBZ','TBCB','TCAL','TCFM','TCKK','TCKS','TCNC','TCQT','TCTK','TDFI','TDHQ','TDIA','TDKV','TDV5','TDWI','TDXW','TEID','TEKZ','TELZ','TENA','TEPC','TEPW','TFDA','TFMP','TFUA','TFUF','TGIV','TGNT','TGTB','THCN','THFE','THHY','TI4M','TIHJ','TITZ','TIYI','TIZE','TJJ9','TJWW','TKHS','TLEK','TLJF','TLQI','TLTG','TLWD','TMAA','TMMM','TMSZ','TNJF','TNRT','TNRU','TNSV','TNYS','TOAS','TOGO','TOMB','TOSD','TOU6','TOWN','TOZA','TPAK','TPDA','TPGG','TPLM','TPPA','TQAC','TQAG','TQRS','TRDA','TRFD','TRJG','TRLK','TRLR','TRPK','TRTW','TRUP','TSCU','TSLE','TSPY','TTBN','TTBO','TTCL','TTDL','TTGH','TTKR','TTMZ','TTRA','TTRY','TTSS','TTSV','TTUD','TUAV','TUGL','TUYU','TUYX','TVJJ','TVT8','TVWX','TWFC','TXO9','TXPW','TXTE','TY3E','TY49','TYAC','TYGI','TZAY','TZEE','TZFP','TZPG','TZUY','FCLF','FCWU','FDIA','FGTA','FISD','FJMY','FLVE','FWBY','T1LW','T2K2','T2TS','T9NU','TAPL','TBCR','TBDF','TBEO','TCCM','TDCA','TFYA','TGEN','TGQ8','TGRG','TGSM','TIDI','TJKJ','TJTI','TKDA','TKRO','TLBG','TLHD','TLPY','TMLL','TMUK','TNHE','TNPW','TOGA','TONA','TOPK','TRLI','TRSX','TSAL','TSHK','TTCA','TTCI','TTDK','TTPP','TTVC','TUCI','TURD','TVAZ','TWKR','TWUV','TXMM','TZJB','TZSA')
-       //and toko in('F4PV','T8VP','TBKV','TCOL')
+
+           
+         
         return rows
     }catch(e){
-        console.log(e)
+        
         return "Error"
     }
 } 
@@ -1415,7 +1468,7 @@ const getListBsacuan = async () => {
 const getListBsExport = async (toko,tanggal) => {
     try{ 
 
-       const [rows] = await conn_ho.query(`
+       const rows = await conn_ho.query(`
        select * from bs where toko='${toko}' and  tanggal='${tanggal}';
         `)
        //and toko in('F4PV','T8VP','TBKV','TCOL')
@@ -1478,6 +1531,7 @@ const UpdateFlagBS = async (data) => {
         await conn_ho.query(queryx) 
         return "Sukses Insert"
     }catch(e){  
+        console.log(e)
         return "Error insert"
     }
 } 
@@ -1486,16 +1540,18 @@ const UpdateFlagBS = async (data) => {
 
 const getListHr = async () => {
     try{
-         const [rows] = await conn_ho.query(`
+         const rows = await conn_ho.query(`
          select a.kdtk, b.nama, b.kdcab,a.tanggal,b.ip_induk as ip1
          from cekharian a
          left join m_toko_ip b on a.kdtk = b.toko
          WHERE 
          b.ip_induk not like '%192.168%'
          and b.ip_induk is not null
-         and a.tanggal = '2023-02-12'
+         and a.tanggal = '2023-05-21'
          and (a.ket != 'Sukses' or a.ket is null)
+         and kdtk in('FQUW','F1NX','THHY','TRJQ','TTUD','TB2U','TPJ6','TT7A','TQOK','TYE7','F36B','FX3S','TKOE','TO5D','FWNQ','T4EV','TIKC','TPB7')
         `)
+        
         return rows
     }catch(e){
         
@@ -1505,7 +1561,6 @@ const getListHr = async () => {
 const updatelistHr = async (kdtk,tanggal,rv) => {
     try{ 
 
-        
         const queryx = `UPDATE cekharian SET 
         ket='Sukses',
         start_closing='${rv[0].start_closing}',
@@ -1514,12 +1569,10 @@ const updatelistHr = async (kdtk,tanggal,rv) => {
         ftp='${rv[0].ftp}',
         last_pos2='${rv[0].last_pos2.substring(0,25).replace(/'/g, '')}'
         where kdtk ='${kdtk}' and tanggal='${tanggal}';`
-
-        await conn_ho.query(queryx)
-      
-        return "Sukses Update"
-    }catch(e){
         
+        await conn_ho.query(queryx) 
+        return "Sukses Update"
+    }catch(e){ 
         return "Error Update"
     }
 }
@@ -1596,8 +1649,338 @@ const updatelistSales= async (data) => {
         return "Error"
     }
 } 
+
+const getListIpNpa= async () => {
+    try{
+            
+       //,'G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224'
+       //'g004','g030','g025','G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224','g236','g237'
+       
+       const rows = await conn_ho.query(`
+        select b.nama_file,left(nama_file,15) as file_acuan,a.toko as kdtk, a.ip_induk as ip_induk,b.*
+        from m_toko_ip a 
+        right join cek_npp b on a.toko = b.kdtk
+        where (ket is null or ket ='' or ket != 'sukses')
+        `)
+       //and toko in('F4PV','T8VP','TBKV','TCOL')
+        return rows
+    }catch(e){
+        return "Error"
+    }
+} 
+
+const getListIpNpa2= async () => {
+    try{
+            
+       //,'G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224'
+       //'g004','g030','g025','G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224','g236','g237'
+       
+       const rows = await conn_50.query(`
+        select a.toko as kdtk, a.ip_induk as ip_induk,b.*
+        from m_toko_ip a
+        right join cek_tat b on a.toko = b.toko_penerima
+        where (cek2 is null or cek2 ='' or cek2 ='|' or length(cek2) < 20)
+        `)
+       //and toko in('F4PV','T8VP','TBKV','TCOL')
+        return rows
+    }catch(e){
+        
+        return "Error"
+    }
+} 
+
+const updateStrukOnline= async (id,amount) => {
+    try{
+        
+        await conn_ho.query(`
+            update m_struk_online set amount = '${amount}' , ket='Sukses' where id='${id}'
+        `)
+         
+        return "Sukses"
+    }catch(e){
+        return e
+    }
+} 
+
+const getListIpDocnoLompat = async()=>{
+    try {
+        const [data] = await conn_local.query(`
+            select a.*,IP_INDUK from docno_lompat a
+            left join m_toko_ip b on a.shop =b.toko
+            where
+            (cektoko is null or cektoko!='OK')
+        `)
+        return data
+    } catch (error) {
+        throw error        
+    }
+}
+const UpdateDocnoLompat = async(r,params)=>{
+    try {
+        await conn_local.query(`
+            update docno_lompat 
+            set 
+            cektoko='OK',
+            get_docno = '${params[0].docno}',
+            get_isi_struk = '${params[0].isi_struk}',
+            get_amount = '${params[0].amount}'
+            where shop='${r.shop}'
+            and tanggal='${r.tanggal}'
+            and shift='${r.shift}'
+            and station='${r.station}'
+            and docno='${r.docno}' 
+        `)
+        console.log(`
+            update docno_lompat 
+            set 
+            cektoko='OK',
+            get_docno = '${params[0].docno}',
+            get_isi_struk = '${params[0].isi_struk}',
+            get_amount = '${params[0].amount}'
+            where shop='${r.shop}'
+            and tanggal='${r.tanggal}'
+            and shift='${r.shift}'
+            and station='${r.station}'
+            and docno='${r.docno}'
+            
+        `)
+        return "Insert Sukses"
+    } catch (error) {
+        console.log(`
+            update docno_lompat 
+            set 
+            cektoko='OK',
+            get_docno = '${params[0].docno}',
+            get_isi_struk = '${params[0].isi_struk}',
+            get_amount = '${params[0].amount}'
+            where shop='${r.shop}'
+            and tanggal='${r.tanggal}'
+            and shift='${r.shift}'
+            and station='${r.station}'
+            and docno='${r.docno}'
+            
+        `)
+        return error        
+    }
+}
+const updateCekNPA= async (namafile,r) => {
+    try{
+        
+        await conn_ho.query(`
+            update cek_npp set wtranin = '${r.wtran}' , 
+            docno = '${r.bukti_no}' , 
+            bukti_tgl = '${r.bukti_tgl}' ,             
+            ket='Sukses' where nama_file='${namafile}';
+        `)
+         
+        return "Sukses"
+    }catch(e){
+        return e
+    }
+} 
+const updateCekNPA2 = async (r,rdata) => {
+    try{
+        
+        await conn_50.query(`
+            update cek_tat set cek2 = '${rdata.cektoko}' 
+            where 
+            toko_penerima='${r.toko_penerima}'
+            and prdcd='${r.prdcd}'
+            and docno='${r.docno}'
+            ;
+        `)
+         
+        return "Sukses"
+    }catch(e){
+        return e
+    }
+} 
+
+
+const getServerIris = async () => {
+    try{
+        
+        const data = await conn_ho.query(`
+        select * from m_server_iris where jenis='IRIS' 
+            and kdcab not in('G099','G097') 
+            order by kdcab ;
+        `)
+         
+        return data
+    }catch(e){
+        return e
+    }
+} 
+
+
+const updateCekItem = async (r) => {
+    try{
+        
+        // tgl_08='${r.tgl_08}',
+        // tgl_09='${r.tgl_09}',
+        // tgl_10='${r.tgl_10}',
+        // tgl_11='${r.tgl_11}',
+        // tgl_12='${r.tgl_12}',
+        // tgl_13='${r.tgl_13}',
+        // tgl_14='${r.tgl_14}',
+        await conn_ho.query(`
+        update cekpr set 
+            pbsl = '${r.tgl_12}',
+            ket='Y'
+        where 
+            kdcab='${r.kdcab}' and
+            toko='${r.toko}' and
+            prdcd='${r.prdcd}'
+        `)
+       
+        return "Sukses"
+    }catch(e){
+         
+        return "Error"
+    }
+} 
+
+
+const getCekItemToko = async () => {
+    try{
+        
+        const data = await conn_ho.query(`
+        select b.*, a.prdcd,a.kdcab,a.toko from cekpr a 
+        left join m_toko_ip b on a.kdcab =b.kdcab and a.toko=b.toko
+        where a.ket is null or a.ket !='Y';
+        `)
+         
+        return data
+    }catch(e){
+        return e
+    }
+} 
+
+
+const updateCekItemToko = async (r) => {
+    try{
+        
+        await conn_ho.query(`
+        update cekpr set  
+            tgl_12_bck='${r.tgl_12_bck}',
+            ket='Y'
+        where 
+            kdcab='${r.kdcab}' and
+            toko='${r.toko}' and
+            prdcd='${r.prdcd}'
+        `)
+       
+        return "Sukses"
+    }catch(e){
+         
+        return "Error"
+    }
+} 
+
+const vquery = async (iptoko, param) => {
+    try{        
+        
+        const rows = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
+        
+        if(rows.status === "NOK"){
+            
+            const rows2 = await conn_any.runQuery(iptoko,"kasir","mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi","pos", 3306, param)
+            if(rows2.status === "NOK"){
+            
+                const rows3 = await conn_any.runQuery(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)   
+            
+                return rows3
+                              
+            }else{
+                return rows2
+            }
+        }else{
+            return rows
+        }
+        
+    }catch(e){  
+        
+        return {
+            status: "NOK",
+            data: e
+          }
+    }
+} 
+ 
+
+const getListRRAK = async () => {
+    try{
+        //where keterangan in('Sudah Input Belum Validasi','Belum Input RRAK') or keterangan is null
+        const data = await conn_new.query(`
+        select * from absen_rrak where keterangan not in('Sudah Realisasi Sudah Transfer') or keterangan is null
+        order by kdcab,toko
+        `)
+        
+        return data
+    }catch(e){
+         console.log(e)
+        return "Error"
+    }
+} 
+const UpdateAbsenRrak = async (r) => {
+    try{
+       
+        const res = await conn_new.query(`
+        update absen_rrak 
+        set 
+            rec='${r[0].rec}' ,
+            qtyrenc ='${r[0].qtyrenc}' ,
+            rprenc ='${r[0].rprenc}' ,
+            rpreal ='${r[0].rpreal}' ,
+            fvalid_true ='${r[0].fvalid_true}' ,
+            fvalid_false ='${r[0].fvalid_false}' ,
+            ftrf_true ='${r[0].ftrf_true}' ,
+            ftrf_false ='${r[0].ftrf_false}' ,
+            tglbuat ='${r[0].tglbuat}' ,
+            keterangan ='${r[0].keterangan}'
+        where 
+        kdcab='${r[0].kdcab}' 
+        and toko='${r[0].toko}';
+        `)
+        
+        return "Sukses"
+    }catch(e){
+         
+        return "Error"
+    }
+} 
+
+const getListRSB = async () => {
+    try{
+        //where keterangan in('Sudah Input Belum Validasi','Belum Input RRAK') or keterangan is null
+        const [data] = await conn_local.query(`
+        select * from rsb where toko in('T1TL','TCM9','T6DH');
+        `)
+        
+        return data
+    }catch(e){
+         console.log(e)
+        return "Error"
+    }
+} 
+
+const updateFlagRSB = async (toko) => {
+    try{
+        //where keterangan in('Sudah Input Belum Validasi','Belum Input RRAK') or keterangan is null
+        await conn_local.query(`
+            UPDATE zarvi.rsb SET ket = 'OK' WHERE toko ='${toko}' limit 1;
+        `)
+        
+        return "Sukses"
+    }catch(e){
+        console.log(e)
+        return "Error"
+    }
+} 
+
 module.exports = {
-    getListSales,updatelistSales,
+    getListRRAK,UpdateAbsenRrak,getListRSB,updateFlagRSB,getListIpDocnoLompat,
+    getListSales,updatelistSales,getServerIris,updateCekItem,getCekItemToko,updateCekItemToko,
     updateFlagx,getListPB,updatelistPB,
     getListlocal,vquery, getListIp, vqueryTembak, getListIpPco, getListIpIntransit,ftpdel,ftpcek,vqueryTembakMany, getListIpRekon,
     getListIpFt,insertData,getListIpOrange,getListIpKuning,
@@ -1609,7 +1992,6 @@ module.exports = {
     getListIpMultidc2,
     getListIpPASSTOKO,getListIp,updateFlag2,updateFlag3,getListIpCatcodSudah,updateFlag4,
     getListIpBuah,getListIpBpb,getListIpIris,vqueryTembakIris,getListIpIkiosk,vqueryIkios,
-    getListIpRetur,
     getListIpLocal,vquerycheckpass3307,
     insertprogram,insertacuanprogram,
     getListIpCeknp, insertDataCeknp,
@@ -1620,5 +2002,7 @@ module.exports = {
     getListBs,UpdateFlagBS,getListBsExport,getListBsacuan,
     getListHr,updatelistHr,
     getListIpSpdmast,vquerySpdmast,
-    getListCekPosrtToko3,UpdateFlagPosrt3
+    getListCekPosrtToko3,UpdateFlagPosrt3,updateStrukOnline,getListIpNpa,updateCekNPA,
+    getListIpNpa2,updateCekNPA2,UpdateDataInitial,getListIpRetur,UpdateRetur,insertHasilFT,UpdateDocnoLompat,
+    queryIris
 }

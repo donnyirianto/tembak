@@ -1,6 +1,6 @@
 var cron = require('node-cron');
 const dayjs = require('dayjs');
-const Models = require('./modelsnew/model')
+const Models = require('./models/model')
 const Ip = require('./helpers/iptoko')
 
 console.log("Service Start")    
@@ -31,7 +31,7 @@ const cekToko = async () => {
 
     console.log("Running Check Toko : " + start)    
     
-    const list = await Models.getListCekPosrtToko(tanggal,jam);
+    const list = await Models.getListCekPosrtToko(tanggal,parseInt(jam));
 
     var queryCheck =`select *,
         (SELECT count(*) as total_trigger FROM information_schema.\`TRIGGERS\` where trigger_name in('TRG_INS_MTRAN','TRG_UPD_MTRAN','TRG_INS_BAYAR','TRG_UPD_BAYAR','TRG_INS_mstran','TRG_UPD_mstran')) as total_trigger,
@@ -107,20 +107,20 @@ const cekToko = async () => {
         ) a` 
     
     list.forEach( async (r) => { 
-      
-      const dataip =  await Ip.bykdtk(r.KDCAB,r.TOKO);
+
+      const dataip =  await Ip.bykdtk(r.TOKO);
       
       if(dataip != "Gagal" && dataip.data.length > 0){
         
         const rv = await Models.vquery(dataip.data[0].IP, queryCheck)
         
-        if(rv === "Gagal" ){
+        if(rv.status === "NOK"){
           
           console.log(dataip.data[0].KDCAB +'|'+ dataip.data[0].TOKO +'|Gagal Koneksi') 
-          await Models.UpdateFlagPosrt(r.TOKO,tanggal,jam,`Koneksi Timeout`)
+          await Models.UpdateFlagPosrt(r.TOKO,tanggal,parseInt(jam),`Koneksi Timeout`)
         }else{ 
-          let keter = `${rv[0].tgl_henti}||${rv[0].tgl_jalan}||${rv[0].tgl_unable}||${rv[0].tgl_underlying}||${rv[0].tgl_time_out}||${rv[0].tgl_ok}||${rv[0].total_trigger}||${rv[0].keterangan}||`
-          await Models.UpdateFlagPosrt(r.TOKO,tanggal,jam,keter)
+          let keter = `${rv.data[0].tgl_henti}||${rv.data[0].tgl_jalan}||${rv.data[0].tgl_unable}||${rv.data[0].tgl_underlying}||${rv.data[0].tgl_time_out}||${rv.data[0].tgl_ok}||${rv.data[0].total_trigger}||${rv.data[0].keterangan}||`
+          await Models.UpdateFlagPosrt(r.TOKO,tanggal,parseInt(jam),keter)
           console.log(dataip.data[0].KDCAB +'|'+ dataip.data[0].TOKO +'|Sukses') 
         }
 
@@ -138,8 +138,9 @@ const cekToko = async () => {
     return true
   }  
 }  
+ 
 
-cron.schedule('00 09,11,15,16,18 * * * *', async() => { 
+cron.schedule('0 0 */1 * * *', async() => { 
   try {
     
     await doitBro() 
@@ -149,7 +150,10 @@ cron.schedule('00 09,11,15,16,18 * * * *', async() => {
   }
 })
 
+
+
 cron.schedule('*/1 * * * *', async() => { 
+//(async() => { 
   try {
     
     await cekToko()
@@ -157,5 +161,5 @@ cron.schedule('*/1 * * * *', async() => {
   } catch (e) {
     console.log(e)
   }
-})
-
+});
+ 

@@ -36,7 +36,7 @@ const cekToko = async () => {
         from posrt_tracelog 
         where 
         \`log\` like '%172.24.16.160%' 
-        and date(tgl) between '2023-02-14' and '2023-02-21'
+        and date(tgl) between '2023-04-01' and '2023-04-30'
         group by date(tgl),hour(tgl))
         a order by tanggal,jam
         ` 

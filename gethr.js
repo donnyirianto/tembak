@@ -1,6 +1,6 @@
 var cron = require('node-cron');
 const dayjs = require('dayjs');
-const Models = require('./modelsnew/model')
+const Models = require('./models/model')
 const Ip = require('./helpers/iptoko')
 
 console.log("Service Start")    
@@ -25,30 +25,30 @@ const cekToko = async () => {
 (
   select  cast(concat(tgl,log) as char) as ket from tracelog 
   where date(tgl) = '${r.tanggal}'
-  and hour(tgl) >16
+  and hour(tgl) >14
   and appname rlike 'pos2' 
   and \`log\` rlike 'cekMatrixPlano'
   ) as start_closing,
   (
   select cast(concat(tgl,log) as char) as ket from tracelog 
   where date(tgl) = '${r.tanggal}'
-  and hour(tgl) >16
+  and hour(tgl) >14
   and appname rlike 'pos2' 
   and \`log\` rlike 'CetakHarian : Tulis file slp'
   ) as slp,
   (
   select  cast(concat(tgl,log) as char) as ket from tracelog 
   where date(tgl) = '${r.tanggal}'
-  and hour(tgl) >16
+  and hour(tgl) >14
   and appname rlike 'pos2' 
   and \`log\` rlike 'Proses HR, size :'
   ) as file_hr,
   (
   select  cast(concat(tgl,log) as char) as ket from tracelog 
   where date(tgl) = '${r.tanggal}'
-  and hour(tgl) >16
+  and hour(tgl) >14
   and appname rlike 'ftptoko'
-  and \`log\` rlike 'Complete: D:%R230212%.${r.kdtk.substring(1,4)}'
+  and \`log\` rlike 'Complete: D:%R230521%.${r.kdtk.substring(1,4)}'
   ) AS ftp, 
 (
   select cast(concat(tgl,log) as char) as ket from tracelog 
@@ -61,13 +61,12 @@ const cekToko = async () => {
         
         const rv = await Models.vquery(r.ip1, queryCheck)
         
-        if(rv === "Gagal" ){
+        if(rv.status != "OK" ){
           
           console.log(r.kdcab +'|'+ r.kdtk +'|'+ r.tanggal +'|Gagal Koneksi') 
-          //await Models.UpdateFlagPosrt(r.TOKO,tanggal,jam,`Koneksi Timeout`)
 
         }else{ 
-          await Models.updatelistHr(r.kdtk,r.tanggal,rv)
+          await Models.updatelistHr(r.kdtk,r.tanggal,rv.data)
           console.log(r.kdcab +'|'+ r.kdtk +'|Sukses') 
         }
  

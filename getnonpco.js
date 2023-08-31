@@ -1,5 +1,5 @@
 const fs = require('fs'); 
-const Models = require('./modelsnew/model')
+const Models = require('./models/model')
 
 
 process.setMaxListeners(0);
@@ -35,7 +35,7 @@ const doitBro = async () => {
           } 
         })     
         const results = await Models.getListIpNonPco();
-
+        
         results.forEach( async (r) => { 
           // ANCHOR ===============Query Ambil Data ========================= 
           /* const queryTembak = `SELECT  '${r.kdcab}' as kdcab, '${r.kdtk}' as kdtk, '${r.nama}' as nama_toko,
@@ -56,10 +56,11 @@ const doitBro = async () => {
 
           const rv = await Models.vquery(r.ip1, queryTembak)
           
-          if(rv === "G" || rv === "Gagal"){
+          if(rv.status === "NOK"){
             console.log(r.kdtk +'|'+ r.kdcab +'|Gagal') 
           }else{
-            const a = JSON.stringify(rv).replace(/[\]\[]/g,"") 
+            
+            const a = JSON.stringify(rv.data).replace(/[\]\[]/g,"") 
             //const c = a.replace(/[}{]/g,"")
             fs.appendFile('data.txt',a, errx => {
               if (errx) {

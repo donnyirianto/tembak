@@ -7,13 +7,15 @@ const getData = async(r,querySelect)=>{
     try {
       let res = []
       const dataip =  await Ip.bykdtk(r.kdcab,r.toko);
-        
+      
       if(dataip != "Gagal" && dataip.data.length > 0){
         
         for(let i of dataip.data[0].PASSWORD.split("|")){
           res = await conn.runQuery(dataip.data[0].IP,dataip.data[0].USER,i,"pos", 3306, querySelect)
-          if(res.status === "OK")
+          if(res.status === "OK"){
+            console.log(`${r.kdcab}|${r.toko}|OK`)
             break;
+          }
         }
   
         return {
@@ -53,14 +55,17 @@ fs.unlink(filePath, (error) => {
 };
 const cekDataToko = async(list,querySelect,file_sukses,file_gagal)=>{
     try {
+        deleteFile(file_sukses);
+        deleteFile(file_gagal);
+
         const allPromise = [];
         for(let r of list){   
-        const promise = new Promise(async (res, rej) => {
-            getData(r,querySelect) 
-            .then((val) => { res(val)})
-            .catch((e) => { rej(e) })
-        });
-        allPromise.push(promise);
+          const promise = new Promise(async (res, rej) => {
+              getData(r,querySelect) 
+              .then((val) => { res(val)})
+              .catch((e) => { rej(e) })
+          });
+          allPromise.push(promise);
         }
 
         let res = await Promise.allSettled(allPromise);
@@ -71,10 +76,7 @@ const cekDataToko = async(list,querySelect,file_sukses,file_gagal)=>{
 
         let res_gagal = res.filter(e=> e.value.statusGetData !="OK")
             res_gagal = res_gagal.map(r=> r.value)
-            
-        deleteFile(file_sukses);
-        deleteFile(file_gagal);
-
+             
         const fileReport = fs.createWriteStream(file_sukses);
         const fileReport2 = fs.createWriteStream(file_gagal);
         

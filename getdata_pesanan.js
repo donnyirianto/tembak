@@ -41,11 +41,19 @@ const doitBro = async () => {
           // ANCHOR ===============Query Ambil Data ========================= 
          
           const queryTembak = ` 
-          select
-        (select kirim from toko) as kdcab,
-        (select toko from toko) as toko,
-        (select nama from toko) as nama,
-        (select period1 from const where rkey='TMT') as tmt
+          SELECT
+          (select kirim from toko) as kdcab,
+          (select toko from toko) as toko,
+          Kode,Sumber,
+          CASE Pesanan_Diantar WHEN 'Y' THEN 'Diantar' WHEN 'N' THEN 'Diambil' END AS Jenis,
+          CAST(DATE_FORMAT(IF(Tanggal_Kirim_Max='0000-00-00',NULL,Tanggal_Kirim_Min),'%Y-%m-%d') AS CHAR) AS TanggalKirimAmbil,
+          CAST(DATE_FORMAT(IF(Tanggal_Kirim_Max='0000-00-00',NULL,Tanggal_Kirim_Min),'%H:%i:00') AS CHAR) AS JamKirimAmbil
+          FROM pos.idelivery_pesanan
+          WHERE Sumber IN ('ISTORE')
+          AND DATE(Tanggal_Kirim_Max) <= CURDATE()
+          AND Status NOT IN ('BOOKING', 'CANCEL')
+          AND Cetak_SP IS NULL AND Keterangan IN('')
+          ORDER BY Tanggal_Kirim_Max ASC;
           `
           
           const rv = await Models.vquery(r.ip1, queryTembak)
@@ -81,15 +89,3 @@ const doitBro = async () => {
 }
  
 doitBro()
-/*
-Cek Spek
-select
-        (select kirim from toko) as kdcab,
-        (select toko from toko) as toko,
-        (select nama from toko) as nama,
-        (select deskripsi from spec_hardware where station=1 and tag = 'RAM_CUR') as ram_1,
-        (select deskripsi from spec_hardware where station=2 and tag = 'RAM_CUR') as ram_2,
-        (select deskripsi from spec_hardware where station=1 and tag = 'Windows Bios Type') bios_1,
-        (select deskripsi from spec_hardware where station=2 and tag = 'Windows Bios Type') bios_2
-
-*/
