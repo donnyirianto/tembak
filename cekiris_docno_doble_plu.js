@@ -29,15 +29,15 @@ const doitBro = async () => {
         const results = await Models.getServerIris();
         
         results.forEach( async (r) => { 
-          await Models.vqueryTembakIris(r.ipserver,r.user,r.pass,r.database, `drop table identik_plu_230831;`)
+          //await Models.vqueryTembakIris(r.ipserver,r.user,r.pass,r.database, `drop table identik_plu_230831;`)
           // ANCHOR ===============Query Ambil Data ========================= 
-          for(let i = 16; i<=30; i++ ){
+          for(let i = 31; i<=31; i++ ){
             let x = i
             if(i < 10){
                 x = `0${i}`
             }
             let tanggal = `2023-08-${x}`
-            let summary = `identik_plu_230831`
+            let summary = `identik_plu_2308`
             let table_dt = `dt_2308${x}`
             let table_byr = `byr_2308${x}`
 
@@ -95,8 +95,7 @@ C_TCH varchar(100),
 C_VBE varchar(100),
 primary key (cabang,shop,tanggal,shift,station,docno_double,seqno,PRDCD)
 )
-engine=InnoDB                
-                `;
+engine=InnoDB`;
             await Models.vqueryTembakIris(r.ipserver,r.user,r.pass,r.database, queryTembak);
             
             let query_select=`

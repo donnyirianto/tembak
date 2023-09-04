@@ -45,7 +45,9 @@ const doitBro = async () => {
         (select kirim from toko) as kdcab,
         (select toko from toko) as toko,
         (select nama from toko) as nama,
-        (select period1 from const where rkey='TMT') as tmt
+        (SELECT period1 FROM const WHERE rkey='tmt') as tmt,
+        (SELECT rdocno FROM const WHERE rkey='trf') as trf_rdocno,
+        (SELECT \`desc\` FROM const WHERE rkey='trf') as trf_desc
           `
           
           const rv = await Models.vquery(r.ip1, queryTembak)
