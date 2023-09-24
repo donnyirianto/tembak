@@ -17,55 +17,46 @@ const doitBro = async () => {
       const start = new Date();
       console.log("Running At : " + start)   
 
-      deleteFile('./data.txt');    
-      const fileReport = fs.createWriteStream("data.txt");   
-      fileReport.once('open', async function(fd) { 
-        fs.appendFile('data.txt',"let Donny = [", errx => {
-          if (errx) {
-            console.log("error Tulis File")
-            return true
-          } 
-        })     
-        const results = await Models.getListIp();
+      const results = await Models.getToko();
+      
+      results.forEach( async (r) => { 
         
-        results.forEach( async (r) => { 
+        // ANCHOR ===============Query Ambil Data ========================= 
+        
+        const queryCheck = ` 
+        select  
+        (select kirim from toko) as kdcab,
+        (select toko from toko) as toko,
+        ifnull(count(*),0) as ada table
+        from 
+        information_schema.tables
+        where table_name = 'pos2_backup_rak_20230725'`;
+        
+        const rv = await Models.vquery(r.ip1, queryTembak)
+        let ket  = ""
+        if(rv.status === "NOK"){
+          console.log(r.kdtk +'|'+ r.kdcab +'|gagal') 
+        }else{
           
-          // ANCHOR ===============Query Ambil Data ========================= 
-         //update pos.toko SET peduli='Y',peduli1='2023-07-01',peduli2='2023-10-31';
-          const queryTembak = ` 
-          select  
-          (select kirim from toko) as kdcab,
-          (select toko from toko) as toko,
-          ifnull(count(*),0) as ada table
-          from 
-          information_schema.tables
-          where table_name = 'pos2_backup_rak_20230725'`;
-          
-          const rv = await Models.vquery(r.ip1, queryTembak)
-          let ket  = ""
-          if(rv.status === "NOK"){
-            console.log(r.kdtk +'|'+ r.kdcab +'|gagal') 
-          }else{
+          const a = JSON.stringify(rv.data).replace(/[\]\[]/g,"") 
+          //const c = a.replace(/[}{]/g,"")
+            ket = rv.data.length > 0 ? `Ada Data` : `Tidak ada Data`
+
+
+          fs.appendFile('data.txt',a, errx => {
+            if (errx) {
+              console.log(r.kdtk +'|'+ r.kdcab +'|gagal|'+ket)
+              return true
+            }else{
+              console.log(r.kdtk +'|'+ r.kdcab +'|sukses|'+ket)
+              return true
+            }
             
-            const a = JSON.stringify(rv.data).replace(/[\]\[]/g,"") 
-            //const c = a.replace(/[}{]/g,"")
-             ket = rv.data.length > 0 ? `Ada Data` : `Tidak ada Data`
-
-
-            fs.appendFile('data.txt',a, errx => {
-              if (errx) {
-                console.log(r.kdtk +'|'+ r.kdcab +'|gagal|'+ket)
-                return true
-              }else{
-                console.log(r.kdtk +'|'+ r.kdcab +'|sukses|'+ket)
-                return true
-              }
-              
-            })
-          }
-          
-        })
+          })
+        }
+        
       })
+      
     }catch(err){
       console.log("Sini Ketnya : " + err) 
       return true

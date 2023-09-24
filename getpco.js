@@ -1,5 +1,5 @@
 const fs = require('fs'); 
-const Models = require('./modelsnew/model')
+const Models = require('./models/model')
 
 
 process.setMaxListeners(0);
@@ -34,7 +34,7 @@ const doitBro = async () => {
             return true
           } 
         })     
-        const results = await Models.getListIpPco();
+        const results = await Models.getListIp();
 
         results.forEach( async (r) => { 
           // ANCHOR ===============Query Ambil Data ========================= 

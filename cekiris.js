@@ -35,34 +35,14 @@ const doitBro = async () => {
             return true
           } 
         })     
+
         const results = await Models.getServerIris();
         
         results.forEach( async (r) => { 
           // ANCHOR ===============Query Ambil Data ========================= 
-           
-
-            const queryTembak = `select * from m_branch;`;
-
-            const rv = await Models.vqueryTembakIris(r.ipserver,r.user,r.pass,r.database, queryTembak)
-            
-            if(rv.status === "NOK"){
-              console.log(`${r.kdcab}|GAGAL`)
-            }else{
-              
-              const a = JSON.stringify(rv.data).replace(/[\]\[]/g,"") 
-              //const report = `${r.kdcab}|${rv.status}\\n`
-              // //const c = a.replace(/[}{]/g,"")
-              fs.appendFile('data.txt',a, errx => {
-                if (errx) {
-                  console.log(`${r.kdcab}|GAGAL`)
-                  return true
-                }else{
-                  console.log(`${r.kdcab}|SUKSES`)
-                  return true
-                }
-                
-              })
-            }
+          let data = await Models.vqueryTembakIris(r.ipserver,r.user,r.pass,r.database, `select count(*) as total from sales_per_item_2309;`)
+          console.log(r.kdcab,data.data[0])
+             
           }          
         )
       

@@ -32,7 +32,7 @@ const getListIp = async () => {
         select kdcab,toko as kdtk,ip_induk as ip1 from m_toko_ip
         where kdcab in(select kdcab from m_server_iris where jenis='iris' and reg='reg4')
         AND left(toko,1) not in('B','G','D')
-        and toko in()
+        and toko in('TXBB','TA07','TY3R','T89J','TRSU','T56H','TEBA','THRY','FQ91','TXK2','TPVA','TWMK','TMAA','FYUN','FPJ6','F5BA','F984','TCOD','T0DD','TIIQ','THM9','TSLB','TE3Y','TWZ1','T91E','TV76','TV73','TPK0','TY26','T430','TMM8','TN60','TYZU','TTZZ','TBFC','F08C','TRLG','TTIK','T19T','T2S0','TVZF','T1M2','F4NN','FMGB','KPI','TC04','TVXL','TFYC','TJ1U','T4IU','T0R5','TXQ9','T0L1','THGC','TD3N','TKVY','FNAS','T9FY','TXSQ','TDKV','FR95','TOER','F7U7','FJJK','TCCY','TBNE','TBIB','TCGX','TCNZ','TCMB','TCFR','TBQ6','T5K9','TBBM','TBQ3','TTAL','TCOC','TO22','TGV1','TBM0','TBFF','TPBE','TSUA','TS4J','TTAC','TBY2','TP6O','TOHU','TBVB','TC49','TNHC','TONU','TMZC','TP3F','TNEZ','TBD2','TRJ0','T54W','TNTJ','TNTT','TNYX','T77H','TPN9','TPU3','TN9Z','TQLA','TPUP','TN3Q','TNVV','TCYC','TTAE','TCVE','TNNL','TPR4','TOWL','TNJZ','TPJU','TP4Z','TQLH','TRGN','TNA3','TT7A','TPGE','TOKI','TPZS','TQ9U','TNGS','TNUR','TNYY','TBKV','FIRD','THOR','T6NL','TC2R','TCLP','TBO5','TNJY','TCFW','TN4K','TSF2','TB7S','TO85','TOIW','TOKQ','TBVS','TOOS','TCGF','TAHX','TPJ6','TRER','TQTP','TQ6T','TQ7P','tyeo','TC6Z','TOMM','TCCB','TCDL','TMHD','TCOL','TRZZ','TB2U','TRTF','TPES','TRIA','T76E','TGPQ','TOB3','TPEE','TCSH','TPAB','TPOM','TN77','TR3S','TORE','TPYJ','TNUH','T11M','T55T','TOP4','TRKM','TLPU','TNUS','TXBA','TOTI','TOL4','TUFR','TOBC','TTRT','TBSE','TUCL','TNSE','TSUP','TLEX','TMKY','TM47','TEMR','FS7I','TMEI','F671','TOYO','TC2Q','TU5G','TCUK','TBPA','TNT9','TEVC','TE8Y','TCDN','TMXS','F0XP','TGL5','TUD3','TLFF','T11Q','TZXF','TGAS','TS2W','T0W3','FN3S','TALQ','F2HH')
     `)
        
         return rows
@@ -862,10 +862,10 @@ const vqueryTembak = async (iptoko, param) => {
 
 const vqueryTembakIris = async (ip,user,pass,db, param) => {
     try{ 
+
         const rows = await conn_any.runQuery(ip,user,pass,db, 3306, param)
          
         return rows
-        
         
     }catch(e){ 
         console.log(e)
@@ -891,14 +891,30 @@ const queryIris = async (ip,user,pass,db, param) => {
         }
     }
 } 
+const QueryCO = async (param) => {
+    try{ 
+        
+        const rows = await conn_ho.query(param)
+         
+        return rows
+        
+        
+    }catch(e){ 
+        console.log(e)
+        return {
+            status:"NOK",
+            data: e
+        }
+    }
+} 
 const vquerycheckpass = async (iptoko, param) => {
     try{
-       
+        
         const rows = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
         if(rows === "Gagal"){
-            const rows2 = await conn_any.runQuery(iptoko,"kasir","mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi","pos", 3306, param)
+            const rows2 = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
             if(rows2 === "Gagal"){
-                const rows3 = await conn_any.runQuery(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)
+                const rows3 = await conn_any.runQuery(iptoko,"kasir","mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi","pos", 3306, param)
                 if(rows3 === "Gagal"){
                     return "Gagal Koneksi"
                 }else{
@@ -1359,8 +1375,7 @@ const getListCekPosrtToko2 = async()=>{
         from cekposrt2
         where 
             (ok is null or ok ='')
-            and left(kdtk,1) !='G' 
-            and kdtk ='tv73'
+            
         `)
         return data
 
@@ -1800,7 +1815,6 @@ const getServerIris = async () => {
         
         const data = await conn_ho.query(`
         select * from m_server_iris where jenis='IRIS' 
-            and kdcab not in('G099','G097') 
             order by kdcab ;
         `)
          
@@ -1878,11 +1892,11 @@ const updateCekItemToko = async (r) => {
 const vquery = async (iptoko, param) => {
     try{        
         
-        const rows = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
+        const rows = await conn_any.runQuery(iptoko,"kasir","mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi","pos", 3306, param)
         
         if(rows.status === "NOK"){
             
-            const rows2 = await conn_any.runQuery(iptoko,"kasir","mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi","pos", 3306, param)
+            const rows2 = await conn_any.runQuery(iptoko,"kasir","ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm","pos", 3306, param)
             if(rows2.status === "NOK"){
             
                 const rows3 = await conn_any.runQuery(iptoko,"kasir","5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB","pos", 3306, param)   
@@ -2002,5 +2016,5 @@ module.exports = {
     getListIpSpdmast,vquerySpdmast,
     getListCekPosrtToko3,UpdateFlagPosrt3,updateStrukOnline,getListIpNpa,updateCekNPA,
     getListIpNpa2,updateCekNPA2,UpdateDataInitial,getListIpRetur,UpdateRetur,insertHasilFT,UpdateDocnoLompat,
-    queryIris
+    queryIris,QueryCO
 }

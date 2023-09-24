@@ -95,18 +95,18 @@ const cekToko = async () => {
         ) a
         ` 
           
-      const dataip =  await Ip.bykdtk(r.kdcab,r.kdtk);
+      const dataip =  await Ip.bykdtk(r.kdtk);
       
       if(dataip != "Gagal" && dataip.data.length > 0){
         
         const rv = await Models.vquery(dataip.data[0].IP, queryCheck)
-        
-        if(rv === "Gagal"){
+        console.log(dataip.data[0])
+        if(rv.status === "NOK"){
           
-          console.log(dataip.data[0].KDCAB +'|'+ dataip.data[0].TOKO +'|Gagal Koneksi') 
+          console.log(dataip.data[0] +'|'+ dataip.data[0].TOKO +'|Gagal Koneksi') 
           //await Models.UpdateFlagPosrt2(r.kdcab,r.kdtk,r.tanggal,r.jam,`Koneksi Timeout`)
         }else{ 
-          
+          console.log(rv.data)
           await Models.UpdateFlagPosrt2(r.kodepsan,rv.data[0].keterangan)
           console.log(dataip.data[0].KDCAB +'|'+ dataip.data[0].TOKO +'|Sukses') 
         }
