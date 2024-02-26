@@ -26,6 +26,8 @@
     "mysql2": "^2.2.5",
     "node-cron": "^3.0.2",
     "node-pandas": "^1.0.5",
+    "papaparse": "^5.4.1",
+    "redis": "^4.6.13",
     "tzdata": "^1.0.25",
     "xlsx": "^0.16.9"
   }

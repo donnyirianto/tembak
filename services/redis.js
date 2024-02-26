@@ -1,32 +1,36 @@
-import redis from 'redis';
-import { logger } from '../config/logger.js';
+const redis = require("redis");
 
-export const client = redis.createClient({
-    socket: {
-        host: '192.168.131.71',
-        port: '6379'
-    }
+const clientRedis = redis.createClient({
+  password: "KSZ5FV1NhAtjii4AhzXZn6E5Tyx3pzsVyMZre07puNsOZijg7VoEZWhgzvfetWehZCGdeYCTvfCqTcRk",
+  socket: {
+      host: '192.168.131.71',
+      port: '6379'
+  }
 });
 
-client.on('error', (err) => {
+clientRedis.on('error', (err) => {
   client.disconnect();  
-  logger.info(`Redis connection error: ${err}`);
-  });
-
-client.on('connect', () => { 
-  logger.info(`Connected to Redis server`); 
+  console.info(`Redis connection error: ${err}`);
 });
 
-client.on('ready', () => {
-  logger.info(`Redis server ready`);
+clientRedis.on('connect', () => { 
+  console.info(`Connected to Redis server`); 
 });
 
-client.on('reconnecting', () => {
-  logger.info(`ReConnecting to Redis server`);
+clientRedis.on('ready', () => {
+  console.info(`Redis server ready`);
 });
 
-client.on('end', () => {
-  logger.info(`Redis server Disconnect`);
+clientRedis.on('reconnecting', () => {
+  console.info(`ReConnecting to Redis server`);
 });
 
-client.connect()
+clientRedis.on('end', () => {
+  console.info(`Redis server Disconnect`);
+});
+
+clientRedis.connect()
+
+module.exports = {
+  clientRedis
+}

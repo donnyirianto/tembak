@@ -36,9 +36,9 @@ const doitBro = async () => {
         (select kirim from toko) as kdcab,
         (select toko from toko) as toko,
         (select nama from toko) as nama,
-        (select concat('2023-09-24 ',\`desc\`) as tgl from const where rkey='TRF') as trf,
-        (select tgl from tracelog where date(tgl) = '2023-09-24' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan Set_LastTransferAuto' order by tgl desc limit 1) as start_trf_data,
-        (select tgl from tracelog where tgl >= (select concat('2023-09-24 ',\`desc\`) as tgl from const where rkey='TRF') and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan UpdateConstDT1' limit 1) as finish_trf_data;
+        (select concat('2023-10-02 ',\`desc\`) as tgl from const where rkey='TRF') as trf,
+        (select tgl from tracelog where date(tgl) = '2023-10-02' and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan Set_LastTransferAuto' order by tgl desc limit 1) as start_trf_data,
+        (select tgl from tracelog where tgl >= (select concat('2023-10-02 ',\`desc\`) as tgl from const where rkey='TRF') and appname rlike 'posidm' and \`log\` rlike 'mulai menjalankan UpdateConstDT1' limit 1) as finish_trf_data;
 `
 //(SELECT \`desc\` FROM const WHERE rkey='trf')  as start_trf_data, 
         const rv = await Models.vquery(r.ip1, queryTembak2)

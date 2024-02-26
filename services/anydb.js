@@ -22,7 +22,6 @@ const runQuery = async (host,user,password,database,port, queryx) => {
       }
     
   } catch (error) { 
-    //console.log(error)
     return {
       status: "NOK",
       data: error
