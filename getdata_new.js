@@ -35,7 +35,7 @@ const doitBro = async () => {
       (select kirim from toko ) as kdcab,
       (select kdtk from toko ) as kdtk,
       tgl_slp,tgl_ttss,tgl_ttkd,no_ttkd,shift,no_ttss,nilai_sales,nilai_kas_toko
-      FROM history_slp WHERE tgl_slp >='2024-02-01' AND no_ttss is not null
+      FROM history_slp WHERE tgl_slp between '2024-02-01' and '2024-02-29' AND no_ttss is not null
       ORder BY tgl_slp`;
 
       const getData = results.map(r => readRespSql(clientRedis,r.kdcab,r.toko, queryCheck));
@@ -56,7 +56,9 @@ const doitBro = async () => {
         const csv_sukses = Papa.unparse(hasil.flat(),{delimiter: '|'}); 
         fs.writeFileSync('data_sukses.csv', csv_sukses);
       }
-
+      dataHasil.forEach(async (r)=> {
+        await clientRedis.del(r)
+      })
       const csv_gagal = Papa.unparse(dataResult_gagal,{delimiter: '|'}); 
       fs.writeFileSync('data_gagal.csv', csv_gagal);
       console.log("Selesai")

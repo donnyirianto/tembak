@@ -1,92 +1,84 @@
-const fs = require('fs'); 
-const Models = require('./models/model')
-
+const fs = require("fs");
+const Models = require("./models/model");
 
 process.setMaxListeners(0);
 
 const sleep = (milliseconds) => {
-  return new Promise(resolve => setTimeout(resolve, milliseconds))
-} 
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
 
 const deleteFile = (filePath) => {
   // Unlink the file.
   fs.unlink(filePath, (error) => {
     if (!error) {
-       return "Sukses Hapus"
+      return "Sukses Hapus";
     } else {
-      return "Gagal Hapus"
+      return "Gagal Hapus";
     }
-  })
+  });
 };
 
-const doitBro = async () => { 
-    try{  
-            
-      const start = new Date();
-      console.log("Running At : " + start)   
+const doitBro = async () => {
+  try {
+    const start = new Date();
+    console.log("Running At : " + start);
 
-      deleteFile('./data.txt');    
-      const fileReport = fs.createWriteStream("data.txt");   
-      fileReport.once('open', async function(fd) { 
-        fs.appendFile('data.txt',"let Donny = [", errx => {
-          if (errx) {
-            console.log("error Tulis File")
-            return true
-          } 
-        })     
-         
-        const results = await Models.getListIp();
-        
-        results.forEach( async (r) => { 
-          
-          // ANCHOR ===============Query Ambil Data ========================= 
-         
-          // const queryTembak = ` 
-          // (select cast(concat(ptag,'|',flagprod) as char) from prodmast where prdcd = '20128415') as prodmast,
-          //(select cast(concat(docno,'|',qty,'|',addid)as char) as npb_d from npb_d where prdcd = '20128415' and recid = '*' limit 1) as npb_d,
-          //(select cast(concat(qty,'|',qtym1,'|',npb_out,'|',tgl_pb,'|',docno,'|',pkm_akh,'|',minor,'|',addid)as char) as pb from his_pbdc where prdcd = '20128415' order by tgl_pb desc limit 1) as pb
-          // ;
-          // `
-          const queryTembak = `select 
-          (select kirim from toko) as kdcab,
-          (select toko from toko) as toko,
-          (select nama from toko) as nama,
-          (select count(*) from initial where tanggal=curdate() and recid = '' and station !='|1') as total_initial,
-          (select \`desc\` from dbl.const where rkey='TG1') as const;
-          `
+    deleteFile("./data.txt");
+    const fileReport = fs.createWriteStream("data.txt");
+    fileReport.once("open", async function (fd) {
+      fs.appendFile("data.txt", "let Donny = [", (errx) => {
+        if (errx) {
+          console.log("error Tulis File");
+          return true;
+        }
+      });
 
-          const rv = await Models.vquery(r.ip1, queryTembak)
-          let ket  = ""
-          if(rv.status === "NOK"){
-            console.log(r.kdtk +'|'+ r.kdcab +'|gagal') 
-          }else{
-            // console.log("sukses")
-            // await Models.insertHasilFT(rv.data) 
-            const a = JSON.stringify(rv.data).replace(/[\]\[]/g,"") 
-            //const c = a.replace(/[}{]/g,"")
-             ket = rv.data.length > 0 ? `Ada Data` : `Tidak ada Data`
+      const results = await Models.getListIp();
 
-            fs.appendFile('data.txt',a, errx => {
-              if (errx) {
-                console.log(r.kdtk +'|'+ r.kdcab +'|gagal|'+ket)
-                return true
-              }else{
-                console.log(r.kdtk +'|'+ r.kdcab +'|sukses|'+ket)
-                return true
-              }
-              
-            })
-          }
-          
-        })
-      })
-    }catch(err){
-      console.log("Sini Ketnya : " + err) 
-      return true
-    } 
-}
- 
-doitBro()
+      results.forEach(async (r) => {
+        // ANCHOR ===============Query Ambil Data =========================
+
+        const queryTembak = `select 
+        (select kirim from toko) as kdcab,
+        (select toko from toko) as toko,
+        (select nama from toko) as nama,
+        TGL,IF((\`LOG\` LIKE '%the remote server returned%' OR \`LOG\` LIKE '%Error :%'),'GAGALTARIK','OK') AS KET,
+        \`LOG\`,
+        APPNAME FROM TRACELOG 
+        WHERE APPNAME RLIKE 'IDM.TarikWS' AND DATE(tgl) BETWEEN '2024-03-18' AND '2024-03-25' 
+        AND \`LOG\` RLIKE 'master_prosus' AND LOG RLIKE 'Response WS|error' GROUP BY DATE(TGL),\`log\`;
+          `;
+
+        const rv = await Models.vquery(r.ip1, queryTembak);
+        let ket = "";
+        if (rv.status === "NOK") {
+          console.log(r.kdtk + "|" + r.kdcab + "|gagal");
+        } else {
+          // console.log("sukses")
+          // await Models.insertHasilFT(rv.data)
+          const a = JSON.stringify(rv.data).replace(/[\]\[]/g, "");
+          //const c = a.replace(/[}{]/g,"")
+          ket = rv.data.length > 0 ? `Ada Data` : `Tidak ada Data`;
+
+          fs.appendFile("data.txt", a, (errx) => {
+            if (errx) {
+              console.log(r.kdtk + "|" + r.kdcab + "|gagal|" + ket);
+              return true;
+            } else {
+              console.log(r.kdtk + "|" + r.kdcab + "|sukses|" + ket);
+              return true;
+            }
+          });
+        }
+      });
+    });
+  } catch (err) {
+    console.log("Sini Ketnya : " + err);
+    return true;
+  }
+};
+
+doitBro();
 /*
 Cek Spek
 select
