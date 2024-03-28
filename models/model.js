@@ -44,7 +44,10 @@ const getListIp = async () => {
 const getToko = async () => {
   try {
     const rows = await conn_ho.query(`
-        select kdcab,toko from m_toko_aktif where kdcab ='G116' and tanggal between '2024-02-01' and '2024-02-29'
+        select kdcab,toko from m_toko_aktif 
+        where tanggal =curdate()
+        and 
+        kdcab in (select kdcab from m_server_iris where jenis='iris' and reg='reg4')
         group by kdcab, toko
     `);
 
