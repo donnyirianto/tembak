@@ -25,26 +25,25 @@ const doitBro = async () => {
     const start = new Date();
     console.log("Running At : " + start);
 
-    // const results = await Models.getToko();
+    const results = await Models.getToko();
 
     // // ANCHOR ===============Query Ambil Data =========================
 
-    // const queryCheck = `
-    //   SELECT
-    //   *,
-    //   (select kirim from toko ) as kdcab,
-    //   (select kdtk from toko ) as kdtk
-    //   from data_change_log;`;
+    const queryCheck = `
+       SELECT
+       (select kirim from toko ) as kdcab,
+       (select kdtk from toko ) as kdtk,prdcd,qty       
+       from stmast where prdcd = 20030644;`;
 
     // // LISTENERS
-    // //const getData = results.map((r) => readRespSql(clientRedis, r.kdcab, r.toko, queryCheck));
+    //const getData = results.map((r) => readRespSql(clientRedis, r.kdcab, r.toko, queryCheck));
     // // NATIVE
-    // const getData = results.map((r) => readRespNative(clientRedis, r.kdcab, r.toko, queryCheck));
-    // const dataCache = await Promise.allSettled(getData);
+    const getData = results.map((r) => readRespNative(clientRedis, r.kdcab, r.toko, queryCheck));
+    const dataCache = await Promise.allSettled(getData);
 
-    // let dataResult = dataCache.filter((r) => r.status === "fulfilled").map((r) => r.value);
-    // const dataResult_sukses = dataResult.filter((r) => r.status == "Sukses");
-    // const dataResult_gagal = dataResult.filter((r) => r.status != "Sukses");
+    let dataResult = dataCache.filter((r) => r.status === "fulfilled").map((r) => r.value);
+    const dataResult_sukses = dataResult.filter((r) => r.status == "Sukses");
+    const dataResult_gagal = dataResult.filter((r) => r.status != "Sukses");
 
     const dataHasil = await clientRedis.keys("GETDATA*");
 

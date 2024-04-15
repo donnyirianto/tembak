@@ -48,6 +48,7 @@ const getToko = async () => {
         where tanggal =curdate()
         and 
         kdcab in (select kdcab from m_server_iris where jenis='iris' and reg='reg4')
+        and kdcab ='G025'
         group by kdcab, toko
     `);
 
