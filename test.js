@@ -1,25 +1,4 @@
-const conn = require("./services/db");
+let x = `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe "[void][system.reflection.Assembly]::LoadFrom('C:\IDMCommandListeners\MySql.Data.DLL');$mysql_server = 'localhost';$mysql_user = 'kasir';$mysql_password = 'xDxXDCtUtIl6DJrwkxoVA0nvNgG5OUWlM=eP2hoyuOre';$dbName = 'pos';$Connection = New-Object -TypeName MySql.Data.MySqlClient.MySqlConnection;$Connection.ConnectionString ="\"SERVER=$mysql_server;DATABASE=$dbName;UID=$mysql_user;PWD=$mysql_password\"";$Connection.Open();$MYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand;$MYSQLDataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter;$MYSQLDataSet = New-Object System.Data.DataSet;$MYSQLCommand.Connection=$Connection;$MYSQLCommand.CommandText="\"CREATE TRIGGER reg4_const_update AFTER UPDATE ON const FOR EACH ROW BEGIN IF NEW.jenis != OLD.jenis AND OLD.rkey ='ABS' THEN INSERT INTO data_change_log (table_name, column_name, recid,old_value,new_value,userid) VALUES ('const', 'jenis', NEW.recid, OLD.jenis, NEW.jenis,USER()); END IF; END;\"";$MYSQLCommand.ExecuteNonQuery();Write-Host 'OK';$Connection.Close();"`;
 
-(async()=>{
-
-try {
-    const querySql  = `replace into db_ori_v3.tpds (id,kdcab,kdtk,nama_toko,tanggal,tanggal_report,tanggal_validasi,jenis,shift,total_setor,pengurang,penambah,nilai_setor_toko,nilai_nominal_cdc,namafile_truck,filesize_truck,namafile,filesize,nik_user,nama_user,jumlah_lampiran,lampiran,id_metode_setoran,id_kdv,id_ttss,id_ttkd,id_pkd,id_sinkron_status,addtime,addid,updtime,updid) VALUES
-    ('TXAM-2401192','G025','TXAM','S. SUPRIADI 172','2024-01-19','2024-01-16 07:30:33.000','2024-01-16 07:31:12.000',NULL,'2',0.0,0.0,0.0,1250000.0,0.0,'KDV-20240116-d823086a-4d3f-4cab-a353-17d7ea797325.jpeg',64.44,'LAMPIRAN-TXAM-6899b031-5344-4f84-a257-10da25ca3965.jpeg',68.74,'0000000002','DEVELOPER',1,'[{"jam": "07:30:00", "nominal": 1250000, "tanggal_setor": "2024-01-16"}]',96,0,'240108TXAM2','','','','2023-12-29 07:10:05.000','py_ori_service_v3','2024-01-16 07:31:12.000',NULL);
-    `
-    
-    const thousandArray = [];
-    for (let i = 0; i < 100; i++) {
-        thousandArray.push(i);
-    }
-
-    thousandArray.forEach(async(e) => {
-        const data = await conn.queryInsert(querySql);
-        console.log(`${e} - ${data}`)
-    });       
-
-    console.log("sukses")
-
-} catch (error) {
-    console.log(error)
-}
-})();
+const u = x.toString();
+console.log(u);

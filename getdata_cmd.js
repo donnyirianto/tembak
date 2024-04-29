@@ -1,5 +1,5 @@
 const Models = require("./models/model");
-const { readRespSql, readRespNative } = require("./helpers/readresp");
+const { readRespCmd, readRespNative } = require("./helpers/readresp");
 const { clientRedis } = require("./services/redis");
 const Papa = require("papaparse");
 const fs = require("fs");
@@ -29,22 +29,17 @@ const doitBro = async () => {
 
     // // ANCHOR ===============Query Ambil Data =========================
 
+    const skripCmd = `dir D:\\backup\\DT34419?.???;D:\\idm\\DT34419?.???;`;
+
+    const dataGagalAll = [];
     // LISTENERS
-    const queryCheck2 = `select 
-    (select kirim from toko) as kdcab,
-    (select toko from toko) as toko,
-    (select period1 from const where rkey='TMT') as tmt,
-    (select addid from const where rkey='TMT') as addid,
-    (select updid from const where rkey='TMT') as updid
-    `;
-    dataResult_gagal = [];
     for (let i = 0; i < listHrAct.length; i += 500) {
       console.info(`[collect] run ${i}-${Math.min(i + 500, listHrAct.length)}`);
       let allPromise = [];
 
       for (let j = i; j < Math.min(i + 500, listHrAct.length); j++) {
         const promise = new Promise((res, rej) => {
-          readRespSql(clientRedis, listHrAct[j].kdcab, listHrAct[j].toko, queryCheck2)
+          readRespCmd(clientRedis, listHrAct[j].kdcab, listHrAct[j].toko, skripCmd)
             .then((val) => {
               res(val);
             })
@@ -57,18 +52,17 @@ const doitBro = async () => {
 
       let actTask = await Promise.allSettled(allPromise);
       actTask = actTask.filter((e) => e.status === "fulfilled").map((r) => r.value);
-      let actTask_NOK = actTask.filter((r) => r.status != "Sukses");
-      let actTask_OK = actTask.filter((r) => r.status === "Sukses");
-      dataResult_gagal.push(...actTask_OK);
+      let dataResult_sukses = actTask.filter((r) => r.status == "Sukses");
+      let dataResult_gagal = actTask.filter((r) => r.status != "Sukses");
+
+      dataGagalAll.push(...dataResult_gagal);
+
       console.info(
-        `[collect] Total Task: Looping request ${i}-${Math.min(i + 500, listHrAct.length)}, Total OK: ${
-          actTask_OK.length
-        }, Total NOK: ${actTask_NOK.length}`
+        `Total Task: Looping request ${i}-${Math.min(i + 500, listHrAct.length)}, Total OK: ${
+          dataResult_sukses.length
+        }, Total NOK: ${dataResult_gagal.length}`
       );
     }
-
-    // NATIVE
-    //const getData = results.map((r) => readRespNative(clientRedis, r.kdcab, r.toko, queryCheck));
 
     const dataHasil = await clientRedis.keys("GETDATA*");
 
@@ -83,7 +77,7 @@ const doitBro = async () => {
     dataHasil.forEach(async (r) => {
       await clientRedis.del(r);
     });
-    const csv_gagal = Papa.unparse(dataResult_gagal, { delimiter: "|" });
+    const csv_gagal = Papa.unparse(dataGagalAll.flat(), { delimiter: "|" });
     fs.writeFileSync("data_gagal.csv", csv_gagal);
     console.log("Selesai");
   } catch (err) {

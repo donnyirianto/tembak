@@ -63,7 +63,6 @@ const readRespSql = async (client, kdcab, toko, query) => {
       toko: toko,
     };
   } catch (err) {
-    console.log(err);
     return {
       code: 400,
       status: "Gagal",
@@ -79,7 +78,7 @@ const readRespNative = async (client, kdcab, toko, queryEx) => {
     let dataReponse = "";
     let ip = await bykdtk(toko);
 
-    if (ip === "Gagal") throw e;
+    if (ip === "Gagal") throw new Error("Gagal Akses Toko");
 
     for (let i of ip.data[0].PASSWORD.split("|")) {
       dataReponse = await runQuery(ip.data[0].IP, ip.data[0].USER, i, "POS", 3306, queryEx);
@@ -106,7 +105,65 @@ const readRespNative = async (client, kdcab, toko, queryEx) => {
   }
 };
 
+const readRespCmd = async (client, kdcab, toko, query) => {
+  try {
+    const payload = [
+      {
+        kdcab: kdcab,
+        toko: toko,
+        id: dayjs().format("YYYYMMDDHHmmss"),
+        task: "COMMAND",
+        idtask: "3",
+        taskdesc: "cek-dt3",
+        timeout: 60,
+        isinduk: true,
+        station: "01",
+        command: query,
+      },
+    ];
+
+    let resp = await axios.post("http://172.24.52.10:2905/CekStore", payload, { timeout: parseInt(20000) });
+
+    if (resp.data.code != 200) {
+      throw new Error("Response Code Api != 200");
+    }
+    let dataRes = JSON.parse(resp.data.data);
+
+    if (dataRes[0].msg != "success" && dataRes[0].msg != "succes") {
+      throw new Error(dataRes[0].msg);
+    }
+
+    let dataReponse = JSON.parse(dataRes[0].data);
+    const hasilCmd = dataReponse[0].cmdResult;
+    const pattern = /4419/;
+
+    const kesimpulan = pattern.test(hasilCmd) ? "ADA" : "TIDAK ADA";
+
+    const datasave = {
+      kdcab: kdcab,
+      toko: toko,
+      kesimpulan: kesimpulan,
+      detail: hasilCmd.replace(/\r\n/g, " "),
+    };
+    await client.set(`GETDATA-${toko}`, JSON.stringify(datasave), "EX", 60 * 60 * 4);
+    return {
+      code: 200,
+      status: "Sukses",
+      kdcab: kdcab,
+      toko: toko,
+    };
+  } catch (err) {
+    return {
+      code: 400,
+      status: "Gagal",
+      kdcab: kdcab,
+      toko: toko,
+      err: err,
+    };
+  }
+};
 module.exports = {
   readRespSql,
   readRespNative,
+  readRespCmd,
 };
