@@ -1,4 +1,17 @@
-let x = `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe "[void][system.reflection.Assembly]::LoadFrom('C:\IDMCommandListeners\MySql.Data.DLL');$mysql_server = 'localhost';$mysql_user = 'kasir';$mysql_password = 'xDxXDCtUtIl6DJrwkxoVA0nvNgG5OUWlM=eP2hoyuOre';$dbName = 'pos';$Connection = New-Object -TypeName MySql.Data.MySqlClient.MySqlConnection;$Connection.ConnectionString ="\"SERVER=$mysql_server;DATABASE=$dbName;UID=$mysql_user;PWD=$mysql_password\"";$Connection.Open();$MYSQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand;$MYSQLDataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter;$MYSQLDataSet = New-Object System.Data.DataSet;$MYSQLCommand.Connection=$Connection;$MYSQLCommand.CommandText="\"CREATE TRIGGER reg4_const_update AFTER UPDATE ON const FOR EACH ROW BEGIN IF NEW.jenis != OLD.jenis AND OLD.rkey ='ABS' THEN INSERT INTO data_change_log (table_name, column_name, recid,old_value,new_value,userid) VALUES ('const', 'jenis', NEW.recid, OLD.jenis, NEW.jenis,USER()); END IF; END;\"";$MYSQLCommand.ExecuteNonQuery();Write-Host 'OK';$Connection.Close();"`;
+const data = {
+  kdcab: "G004",
+  toko: "F94C",
+  nama: "GENDOH - BANYUWANGI",
+  station: "01",
+  ip: "10.41.42.226",
+  code: 200,
+  msg: "Succes",
+  data: '["[{\\"kdcab\\":\\"G004\\",\\"toko\\":\\"F94C\\",\\"tanggal\\":\\"2024-08-24\\",\\"noStruk\\":null,\\"jmlStruk\\":0,\\"nilaiStruk\\":null,\\"isiStruk\\":null}]"]',
+  idreport: "ambildatastruk-F94C2024-08-30",
+  timerequest: "2024-09-04 09:11:29",
+  timerespons: "2024-09-04 09:11:29",
+};
 
-const u = x.toString();
-console.log(u);
+let u = JSON.parse(data.data);
+let x = JSON.parse(u);
+console.log(x);

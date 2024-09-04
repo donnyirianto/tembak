@@ -6,6 +6,9 @@ const conn_any = require("../services/anydb");
 const ftp = require("../services/ftp");
 var dateFormat = require("dateformat");
 var dayjs = require("dayjs");
+const Papa = require("papaparse");
+const fs = require("fs");
+
 /* 
 --- user kasir new 2023-02 ----
 ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm
@@ -32,6 +35,7 @@ const getListIp = async () => {
         select kdcab,toko as kdtk,ip_induk as ip1 from m_toko_ip
         where kdcab in(select kdcab from m_server_iris where jenis='iris' and reg='reg4')
         AND left(toko,1) not in('B','G','D')
+        and toko in('TTFI','FF7X','TJ1U','TVXL','TYZU','FJJK','T0R5','TMGD','TCT6','TK8U','P002','P001','TDTN','TR7B','TTEW','TKU5','T1M2','T9A5','TSLV','TDRE','TO70','TDKV','TY9G','Y006','FF3Q','X001','TEJO','TCOD','P017','TY49','FHAT','T0L1','P002','TYU2','FM2O','TQFV','TRPM','TQA2','TFI7','TRLG','TGFK','TXBA','SDEV','T3V8','TT99','FUEK','FS26','TDCA','FC0W','TIIQ','P010','TFYC','TSUP','TDWE','TV3I','F97Q','TY3R','T7F2','TYEO','TK43','T4YD','FLEX','TASX','THEH','T5W6','TPAK','TPVA','TJ1L','TWZ1','T02P','TU4S','T6EU','P004','FPMP','T2WM','FL6L','TRGU','FKIU','T0JZ','TVVV','F3FT','FMKC','FPBW','FV8R','T1MV','TACY','TTBH','TYDO','P012','T6E2','TEPC','T5GN','TE8Y','TKAP','TM2O','TM5L','TUMR')
     `);
 
     return rows;
@@ -45,8 +49,7 @@ const getToko = async () => {
     const rows = await conn_ho.query(`
         select kdcab,toko from m_toko_aktif 
         where tanggal =curdate()
-        and kdcab in('G117','G113','G107','G026','G157','G033')
-        and toko in('TEZR','TFLL','TQ4H','TQS6','TR7H','TS4F','TS5A','TUI7','TUKA','TUVF','TV19','TVHV','TVWE','TW3C','TW75','TWAA','TWK9','TWKL','TWLA','TWPK','TWQA','TWRP','TX1W','TX7T','TX8B','TXDP','TXP3','TXTT','TXVF','TXW6','TXYI','TY3J','TY75','TY81','TYCE','TYCY','TYL8','TYPN','TZ0D','TZ5F','TZ8I','TZCN','TZKR','TZTU','F034','F03E','F08L','F246','F2QQ','F38L','F3UG','F5LX','F5N1','F6T1','F6XO','F70Q','F79D','F7PN','F7S4','F8CY','FB5N','FB7S','FC56','FCIB','FCQ5','FD06','FD87','FEDE','FEFF','FEKA','FEYO','FF34','FF3I','FF82','FFEQ','FFER','FFFM','FFHF','FFIH','FG3E','FG46','FGFJ','FGNU','FH55','FH5S','FH7D','FHEQ','FHHH','FHNN','FHQQ','FIGA','FIKO','FIXI','FJXB','FL6K','FLVO','FM1N','FMN5','FMP4','FNF8','FO4J','FOCU','FPC3','FR25','FRA0','FRH6','FROZ','FS83','FSTL','FT06','FUHH','T1NR','T1UD','T1VY','T22A','T2CZ','T32K','T36D','T3IS','T3N0','T3NB','T3NK','T3PV','T3S9','T3TE','T41J','T47D','T4QG','T63C','T63J','T6AP','T6EQ','T6LK','T6UF','T70N','T70Q','T72G','T78A','T795','T7WA','T86T','T8N2','T99D','T9GZ','T9QN','T9RB','T9US','TA5V','TA7Q','TA9M','TAAK','TAAS','TADY','TAIL','TAIU','TAJ2','TAJA','TAKA','TANU','TARU','TATY','TAUO','TAY1','TAYO','TB08','TB57','TBBB','TBXQ','TBYZ','TC1E','TC4C','TC8E','TCMZ','TCOO','TCV7','TCWW','TCYY','TD69','TD8C','TDF4','TDK5','TE07','TE0M','TE17','TEBE','TELL','TEMA','TEUL','TEUS','TFCS','TFPG','TFQ2','TG38','TG67','TGAH','TGG2','TGK2','TGO0','TGQB','TH8U','THUI','TI4Z','TI6V','TIIK','TIP3','TJ8Z','TJMY','TK0Y','TK5R','TK77','TNAN','TNDA','TNJJ','TOAT','TOGU','TOJO','TONO','TOO8','TOOL','TOOQ','TORI','TOTT','TP25','TP42','TP44','TP53','TPA5','TQ7Y','TQKQ','TQPD','TQTX','TR9C','TRF8','TRVB','TRZV','TS25','TSDD','TSU2','TSUU','TT22','TT57','TTDT','TTIT','TTJ0','TTKC','TTMU','TTOS','TU1L','TUGG','TUGU','TUHU','TUIL','TUNU','TUPU','TUUD','TUYO','TV5T','TV81','TVA6','TVDX','TVIN','TW3K','TWDC','TWIA','TWJQ','TWWY','TX9U','TXXT','TY66','TYVR','TYZ0','TYZK','TZBJ','TZFF','TZKT','TZY1','F01F','F03L','F0HQ','F1H2','F1HR','F27A','F297','F2GZ','F31Z','F34A','F360','F36C','F370','F3IN','F3OF','F44A','F46P','F4AO','F4PW','F4PX','F4UX','F4XL','F4YF','F520','F55R','F6E5','F733','F7KR','F880','F8XS','F99C','FAQ5','FC8J','FD02','FDI1','FDW2','FEIR','FFG1','FFHW','FGNK','FHU5','FJZJ','FKP3','FOWZ','FPGN','FPQU','FT17','FT5J','FTUN','FUIL','FUU1','FZXD','T038','T03O','T09K','T0I9','T0YR','T20H','T2IC','T2NY','T2SV','T3JW','T3NO','T3QI','T69B','T8Q9','T8QI','T8VM','T92D','T9YH','TBL7','TBT0','TBVW','TCWO','TDPN','TDY0','TFBA','TFDU','TFEK','TGIL','TH6W','THC5','THHK','THKX','THNS','TI6Y','TJ45','TJ64','TJ73','TJ7Q','TJPQ','TJT7','TK36','TK93','TM3R','TMGL','TNF6','TNFZ','TNOQ','TNOW','TNS2','TNXD','TNYF','TNZH','TO1H','TO26','TO2H','TO33','TO9Q','TOA1','TODD','TON7','TONV','TOZ7','TP8F','TP9I','TPE1','TPE5','TPHT','TPIL','TPPW','TPTG','TPU6','TPYV','TQ6W','TQB1','TQJ0','TQMC','TQP0','TQQC','TQR9','TR26','TR2Q','TR98','TRA7','TRD7','TRDS','TRO4','TRP2','TRRV','TRZG','TS0B','TS18','TS24','TS41','TS70','TSCZ','TSEQ','TSJT','TSN8','TSOO','TSW4','TT61','TT78','TT8J','TTB4','TTE8','TTEG','TTFN','TTHJ','TTIB','TTIP','TTKN','TTND','TTPR','TTRL','TTT9','TTWJ','TTZH','TU2J','TU4J','TU5X','TUBJ','TUGQ','TUMQ','TUWS','TUZI','TUZM','TV51','TV5Y','TV95','TVAM','TVJG','TVM8','TVNR','TVSU','TVTU','TVVN','TW17','TW41','TW6D','TW8V','TWHD','TWHF','TWHP','TWIU','TWKU','TWNN','TWRY','TWUG','TWUZ','TWVA','TWVF','TX1R','TX2M','TX6S','TX7B','TXBB','TXCC','TXCJ','TXF9','TXG8','TXHT','TXI8','TXOU','TXWA','TXXJ','TXZM','TY3Y','TY7I','TYBO','TYJC','TYKI','TYSA','TYTM','TYW8','TZG6','TZGV','TZHH','TZOF','TZOQ','TZRA','TZWJ','F07A','F0VX','F11H','F15U','F176','F177','F180','F19G','F1IV','F1KX','F1TU','F210','F22D','F2CU','F2FL','F2SE','F3P4','F3RO','F4CO','F4RX','F539','F575','F5C9','F63A','F64C','F664','F6BT','F711','F71A','F755','F779','F77Q','F790','F7Y0','F834','F852','F853','F8P0','F900','F93F','F94Q','F94U','F953','F960','F979','F9CI','F9VH','FAD9','FASF','FBAN','FBPE','FC26','FC27','FC5V','FCGY','FD8K','FDNG','FDNP','FDS5','FDT1','FDZY','FE2S','FE30','FE46','FE4K','FE8N','FE9H','FEEL','FEM6','FEPH','FEVM','FEXQ','FF6X','FFFZ','FG5B','FG85','FGAZ','FGBP','FGC5','FGQ2','FGSA','FH23','FHEJ','FHIU','FHR2','FIPR','FJDE','FJLW','FJQ4','FJS7','FJVF','FKF4','FKG9','FKL3','FL07','FL0T','FL21','FL7F','FLCD','FLRL','FLU7','FMJC','FMZD','FPNW','FPXP','FQ10','FQ14','FQ8E','FR8Z','FREQ','FS80','FSOS','FVR6','FXJQ','FXWM','FXYU','FY04','FY2A','FY9F','FYKB','FZ4V','RECG','T01J','T03J','T063','T06J','T06K','T076','T07K','T0M8','T0SV','T0YA','T0Z1','T12W','T136','T145','T15J','T1K9','T1VU','T1XH','T20G','T218','T22K','T24K','T264','T26J','T28J','T2FR','T2NA','T2WI','T2YN','T32D','T34K','T3AK','T3CF','T3DP','T3J8','T3LS','T3MW','T3SN','T3XK','T42L','T43L','T44Y','T4FY','T4GE','T4RP','T4UC','T4ZK','T5KS','T5SD','T5Z3','T60L','T61P','T64T','T65B','T68C','T6M3','T6MT','T6SI','T6VQ','T6WK','T6YX','T6Z9','T72M','T7EG','T7FE','T7GS','T7TG','T7UQ','T7VL','T82T','T8GV','T8IS','T8JG','T8QZ','T8UN','T93D','T96B','T9IC','T9PF','T9PV','T9QD','T9SK','T9VN','TA9R','TADC','TAGP','TAKP','TARG','TB1K','TB45','TB73','TBCO','TBKB','TBQY','TBR4','TBS6','TBXM','TBXN','TBXR','TC3V','TC4E','TCB8','TCE7','TCE8','TCJ7','TCLM','TCOJ','TD12','TD63','TD7D','TDBA','TDGL','TDJM','TDNB','TE6C','TEAS','TECA','TEPA','TERA','TF0K','TF2P','TF4R','TFBS','TFCJ','TFDV','TFEC','TFLK','TFNH','TG9U','TGJG','TGKY','TGL2','TGLZ','TGM9','TGZ6','TH8W','THLY','THRV','THTE','THYW','TI5Z','TICM','TITV','TJ11','TJ26','TJ44','TJ49','TJ57','TJ95','TJAL','TJHQ','TJR5','TK78','TK8J','TK9L','TKG6','TKGJ','TKIT','TKM8','TKQZ','TKZ1','TL1J','TL78','TLAK','TLDW','TLHM','TLHS','TLJL','TLS1','TM3C','TM56','TM7W','TMBY','TNC6','TNET','TNFF','TNH3','TNKE','TNPE','TNRW','TNV5','TNXJ','TNZD','TOAJ','TOAK','TOGM','TP05','TP14','TP31','TP6E','TPE3','TPNK','TPY1','TQ4T','TQAA','TQBL','TQD9','TQDX','TQF6','TQGJ','TQNZ','TQW6','TR11','TR23','TR41','TR5W','TR6W','TRDX','TREG','TRJJ','TROU','TRRJ','TS1D','TS20','TS40','TS4M','TS71','TS77','TSBX','TSCD','TSFS','TSN5','TSOG','TSOV','TSS4','TSS7','TSSA','TSSE','TSTF','TT1W','TT20','TT3J','TT5T','TTES','TTT8','TTVL','TU3U','TU4G','TUGN','TUN0','TUQ2','TUW5','TUYE','TUZA','TUZX','TV3C','TV6B','TV9P','TVBK','TVDQ','TVHU','TVMA','TVNJ','TVZE','TW2R','TW8B','TWAT','TWF4','TWGC','TWHY','TWNH','TWRA','TWXS','TXAV','TXBH','TXH5','TXJ1','TXJX','TXMG','TXNA','TXPJ','TXS7','TXVE','TXWS','TY5B','TY6N','TY9T','TYGF','TYJM','TYNC','TYWQ','TYWX','TYX6','TZ0L','TZ3D','TZBL','TZHV','TZR6','F00E','F03F','F05E','F07E','F0B8','F0CD','F0NX','F0QY','F0SE','F117','F124','F150','F1GY','F1JO','F1RF','F1X9','F280','F2B1','F2JO','F2R9','F32F','F33M','F39A','F3FO','F4MA','F4VR','F509','F53Y','F554','F57V','F58A','F594','F597','F5QY','F5Y0','F5Z5','F68G','F68U','F6M6','F6R5','F6VT','F72C','F776','F777','F778','F7FS','F83N','F85A','F8E2','F8L8','F940','F98Q','F9JU','F9S8','F9T3','FA72','FAE3','FAGD','FAP5','FARC','FASZ','FC8L','FCD3','FCJ4','FDBH','FDGS','FDXU','FE0T','FE56','FE5M','FEJY','FEQJ','FEZK','FFJW','FFKK','FFRZ','FG45','FG8H','FGML','FGPK','FHIP','FHO6','FHOA','FHTZ','FHVG','FI00','FI9D','FIDS','FJEJ','FJY8','FK1N','FK3V','FKHM','FKP5','FKP9','FL3K','FL74','FLEO','FLKZ','FLWP','FM5I','FMIM','FMLX','FMPG','FNMH','FO1K','FO2Y','FO35','FP8T','FPAC','FQ1F','FQ4X','FQ4Z','FQ93','FQJR','FQOR','FR90','FRDK','FRS9','FS3C','FSA4','FSE6','FT07','FTHF','FTLM','FTNQ','FU0K','FUN8','FUPC','FUXD','FVLJ','FVM5','FVO0','FVSB','FVSU','FX7U','FXAQ','FXF6','FXGX','FY2R','FY9K','FYEJ','FYG3','FZ29','FZ9R','FZZV','R103','RZ7I','T04M','T0A8','T0CF','T0L7','T0LJ','T0LW','T13J','T14E','T182','T18Q','T19D','T19E','T1CE','T1DO','T1E7','T1EC','T1I8','T1I9','T1PM','T1Q5','T1Y1','T23T','T28E','T29E','T2AF','T2ET','T2FV','T2I9','T2KG','T2O1','T2UB','T2YR','T2ZV','T33O','T3CV','T3LX','T3TO','T3W7','T3YO','T404','T40I','T42A','T42E','T42Q','T4EB','T4FD','T4HY','T4PH','T4SY','T51E','T567','T5CW','T5KJ','T5O6','T5PW','T5UM','T5VC','T5XA','T64C','T65O','T6CD','T6KN','T6M0','T6W3','T6X9','T74E','T778','T7B4','T7LY','T7QX','T7X8','T7Y0','T86M','T86N','T8BS','T8ET','T8JM','T8SA','T8SF','T8UF','T8UT','T8VR','T8WF','T90Y','T92P','T96C','T9DK','T9F5','T9GR','T9K4','T9N2','T9V2','T9ZR','TA0U','TACW','TAID','TAMS','TAVE','TAVZ','TB8A','TBBD','TBGR','TBQF','TBS8','TBUK','TBWA','TBXX','TC3J','TCE3','TCI8','TCL6','TCRJ','TCTD','TCUD','TCUT','TCYU','TCZ7','TD04','TD05','TD1I','TD1S','TD4N','TDJO','TDP2','TDZJ','TE2I','TE3B','TE8V','TEB7','TEEC','TEIR','TEMB','TEQ6','TEQ9','TES4','TEZX','TF5R','TF5W','TFAI','TFB2','TFBK','TFDQ','TFHX','TFJT','TFM1','TFS4','TFT1','TFZ9','TG5K','TGC4','TGDA','TGLC','TGOW','TGS0','TGWS','TGWZ','TGXH','THAQ','THGZ','THLV','THPS','THUT','THVC','THVP','THXK','TI4J','TI4Y','TI92','TIF6','TIG9','TIGT','TIKX','TIM4','TINP','TIXP','TJ3J','TJAN','TJCK','TJCT','TJM4','TJNT','TJP6','TJUE','TJZ5','TK1C','TK27','TK7B','TKB0','TKBV','TKE3','TKJ2','TKM2','TKMQ','TKX7','TLDG','TLET','TLI7','TLM1','TLQH','TLUI','TLUQ','TLWZ','TM9S','TMAW','TMMS','TMS7','TMWK','TN23','TN62','TNCV','TNDN','TNEU','TNEW','TNHX','TNM0','TNS1','TNS5','TO6F','TO7W','TOA5','TOBD','TOCA','TOCY','TOGC','TOLY','TOML','TOOC','TOSI','TOUA','TOX0','TP2C','TP2G','TP74','TP8A','TPBY','TPC7','TPEJ','TPM0','TPMG','TPQT','TPRH','TPSL','TPSN','TPWC','TPXI','TPY6','TPZZ','TQ0L','TQ6G','TQ6X','TQBE','TQC6','TQG0','TQH8','TQUC','TR2M','TRAE','TRC5','TRIS','TRR7','TRS1','TRW8','TS0X','TS7R','TS87','TS8O','TSAO','TSBG','TSLC','TSQ2','TSS6','TSTH','TT0A','TT9A','TT9X','TTBQ','TTGD','TTH7','TTJE','TTJN','TTWF','TTXR','TU7D','TU8F','TUBI','TUFN','TUKG','TUNJ','TUZ5','TUZR','TV2Y','TV37','TV3M','TV5B','TV6G','TVCU','TVQT','TVR9','TVTS','TVUC','TVW5','TVWS','TVWV','TVXD','TVYK','TW23','TW3R','TW9S','TWDW','TWED','TWI3','TWII','TWK2','TWWB','TX0T','TX8D','TXF2','TXJ3','TXTL','TXV2','TY0W','TY2P','TY3K','TY4V','TY5K','TY7A','TY96','TYEJ','TYK4','TYLU','TYQ0','TYWC','TYX0','TZ0N','TZ1T','TZ2T','TZ4V','TZC8','TZJH','TZKS','TZPE','TZWV','TZZK')
+        and kdcab ='G116'
     `);
 
     return rows;
@@ -57,12 +60,14 @@ const getToko = async () => {
 
 const getTokoStruk = async (toko) => {
   try {
+    //--AND statusListener is null
     const filter = toko.length > 0 ? `and concat(toko,tanggal) not in(${toko})` : "";
     const rows = await conn_ho.query(`
     select kdcab,toko,tanggal from summary_varian_2024 
-    where tanggal between '2024-03-01' and '2024-03-07'
-    AND statusListener is null
+    where tanggal between '2024-08-15' and '2024-08-31'
+    AND (lower(statusListener) not rlike 'succes' or statusListener is null)
     ${filter}
+    order by tanggal,toko
     ;
     `);
 
@@ -253,8 +258,21 @@ const getListIpIris = async () => {
     const rows = await conn_ho.query(`
         select * from m_server_iris
         WHERE jenis = 'IRIS'
+        and flag != 1`);
+    return rows;
+  } catch (e) {
+    console.log(e);
+    return "Error";
+  }
+};
+
+const getListIpIris2 = async () => {
+  try {
+    const rows = await conn_ho.query(`
+        select * from m_server_iris
+        WHERE jenis = 'IRIS'
         and flag != 1
-        `);
+        and kdcab in('G301')`);
     return rows;
   } catch (e) {
     console.log(e);
@@ -885,8 +903,8 @@ const vqueryTembak = async (iptoko, param) => {
   try {
     const rows = await conn_any.runQuery(
       iptoko,
-      "root",
-      "giTk2Yr0K9VV5nBKzn22JafQt9iUiuQ3A=3soy2lSa1t",
+      "kasir",
+      "IBFclpn+vT3lRyK++3tN4pYWvKlYPqakg=rNgrhYREb/",
       "pos",
       3306,
       param
@@ -894,8 +912,8 @@ const vqueryTembak = async (iptoko, param) => {
     if (rows.status === "NOK") {
       const rows2 = await conn_any.runQuery(
         iptoko,
-        "root",
-        "v4dg4IDbVLYJnB7zOv3lKg8jw8WPvrwd4=NqpoGGrLCX",
+        "kasir",
+        "xDxXDCtUtIl6DJrwkxoVA0nvNgG5OUWlM=eP2hoyuOre",
         "pos",
         3306,
         param
@@ -904,7 +922,7 @@ const vqueryTembak = async (iptoko, param) => {
         const rows3 = await conn_any.runQuery(
           iptoko,
           "kasir",
-          "xDxXDCtUtIl6DJrwkxoVA0nvNgG5OUWlM=eP2hoyuOre",
+          "5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB",
           "pos",
           3306,
           param
@@ -932,14 +950,17 @@ const vqueryTembak = async (iptoko, param) => {
 
 const vqueryTembakIris = async (client, kdcab, ip, user, pass, db, param) => {
   try {
+    const start = dayjs().format("YYYY-MM-DD HH:mm:ss");
     const rows = await conn_any.runQuery(ip, user, pass, db, 3306, param);
 
     if (rows.status != "OK") throw new Error(rows.data);
 
-    await client.set(`GETDATAIRIS-${kdcab}`, JSON.stringify(rows.data), "EX", 4 * 60 * 60);
-
-    return rows;
+    await client.set(`GETDATAIRIS-${kdcab}`, JSON.stringify(rows.data));
+    const end = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    console.log(`${kdcab}|${start}|${end}`);
+    return `${kdcab}-Sukses`;
   } catch (e) {
+    console.log(`${kdcab}-Gagal`);
     return {
       kdcab: kdcab,
       status: "NOK",
@@ -2152,4 +2173,5 @@ module.exports = {
   getToko,
   getTokoStruk,
   InsertDataStrukOl,
+  getListIpIris2,
 };

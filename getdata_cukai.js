@@ -22,19 +22,25 @@ const prepareData = async (client, r) => {
 
 const doitBro = async () => {
   try {
-    const x = await clientRedis.keys("GETDATA-*");
-    x.forEach(async (r) => {
-      await clientRedis.del(r);
-    });
+    
     const start = new Date();
     console.log("Running At : " + start);
 
-    const listHrAct = await Models.getToko();
+    const listHrAct = 
 
     // // ANCHOR ===============Query Ambil Data =========================
 
     // LISTENERS
-    const queryCheck2 = `SELECT tgl_slp as tanggal,(select toko from toko) as toko,no_ttss as ttss,nilai_kas_toko FROM history_slp WHERE tgl_slp >= '2024-05-01'`;
+    const queryCheck2 = `select 
+    (select kirim from toko ) as kdcab,
+    (select toko from toko ) as kdtk,
+    cast(date(bukti_tgl)as char) as tanggal, bukti_no FROM mstran WHERE 
+rtype = 'K'
+AND date(bukti_tgl) >='2024-05-01'
+AND prdcd in(SELECT prdcd FROM master_returcukai)
+AND keter = '04130000 RETUR CUKAI'
+GROUP BY date(bukti_tgl),bukti_no;
+    `;
 
     let dataResult_gagal = [];
 
