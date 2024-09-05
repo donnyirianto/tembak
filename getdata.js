@@ -42,7 +42,7 @@ const doitBro = async () => {
         (select kirim from toko) as kdcab,
         (select toko from toko) as toko,
         (select nama from toko) as nama,
-        (SELECT cast(concat(tgl,'-',\`log\`) as char) FROM tracelog WHERE date(tgl)=curdate() AND log RLIKE 'PosIdm : Selesai update rkey TMT' limit 1) as ket;
+        recid, \`desc\`,updtime from const where rkey='E02';
           `;
 
         const rv = await Models.vquery(r.ip1, queryTembak);

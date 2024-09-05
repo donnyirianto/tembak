@@ -35,7 +35,7 @@ const getListIp = async () => {
         select kdcab,toko as kdtk,ip_induk as ip1 from m_toko_ip
         where kdcab in(select kdcab from m_server_iris where jenis='iris' and reg='reg4')
         AND left(toko,1) not in('B','G','D')
-        and toko in('TTFI','FF7X','TJ1U','TVXL','TYZU','FJJK','T0R5','TMGD','TCT6','TK8U','P002','P001','TDTN','TR7B','TTEW','TKU5','T1M2','T9A5','TSLV','TDRE','TO70','TDKV','TY9G','Y006','FF3Q','X001','TEJO','TCOD','P017','TY49','FHAT','T0L1','P002','TYU2','FM2O','TQFV','TRPM','TQA2','TFI7','TRLG','TGFK','TXBA','SDEV','T3V8','TT99','FUEK','FS26','TDCA','FC0W','TIIQ','P010','TFYC','TSUP','TDWE','TV3I','F97Q','TY3R','T7F2','TYEO','TK43','T4YD','FLEX','TASX','THEH','T5W6','TPAK','TPVA','TJ1L','TWZ1','T02P','TU4S','T6EU','P004','FPMP','T2WM','FL6L','TRGU','FKIU','T0JZ','TVVV','F3FT','FMKC','FPBW','FV8R','T1MV','TACY','TTBH','TYDO','P012','T6E2','TEPC','T5GN','TE8Y','TKAP','TM2O','TM5L','TUMR')
+        and kdcab ='G025'
     `);
 
     return rows;
@@ -48,8 +48,8 @@ const getToko = async () => {
   try {
     const rows = await conn_ho.query(`
         select kdcab,toko from m_toko_aktif 
-        where tanggal =curdate()
-        and kdcab ='G116'
+        where tanggal =curdate()-1
+        and kdcab ='G025'
     `);
 
     return rows;

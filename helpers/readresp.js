@@ -11,13 +11,13 @@ const readRespSql = async (client, kdcab, toko, tanggal, query) => {
         toko: toko,
         idreport: `strukol${toko}${tanggal}`,
         task: "SQL",
-        id: `strukol${toko}${tanggal}`,
         idtask: `strukol${toko}${tanggal}`,
         taskdesc: `strukol${toko}${tanggal}`,
         timeout: 60,
         isinduk: true,
         station: "01",
-        command: query,
+        command:
+          "SELECT (select toko from toko) as toko,(select nama from toko) as nama,`desc`, updtime FROM const WHERE rkey ='E02'",
       },
     ];
     let resp = await axios.post("http://172.24.52.10:2905/CekStore", payload, { timeout: parseInt(100000) });
@@ -27,19 +27,26 @@ const readRespSql = async (client, kdcab, toko, tanggal, query) => {
     }
 
     let dataRes = JSON.parse(resp.data.data);
-    console.log(resp.data.data);
+
     if (dataRes[0].msg.substring(0, 7) != "success" && dataRes[0].msg.substring(0, 6) != "succes") {
       throw new Error(dataRes[0].msg);
     }
 
-    let dataReponse = JSON.parse(dataRes[0].data);
+    let dataReponse = [];
 
-    dataReponse = JSON.parse(dataReponse[0]);
-    if (dataReponse.hasOwnProperty("error") || dataReponse[0].hasOwnProperty("pesan")) {
-      throw new Error("Data Error atau Pesan");
+    if (dataRes[0].msg != "Succes SQL Native") {
+      let u = JSON.parse(dataRes[0].data);
+      let x = JSON.parse(u);
+      dataReponse = x;
+    } else {
+      dataReponse = JSON.parse(dataRes.data);
     }
 
-    await client.set(`GETDATA-${toko}-${tanggal}`, JSON.stringify(dataReponse), "EX", 60 * 5);
+    if (dataReponse.hasOwnProperty("error") || dataReponse.hasOwnProperty("pesan")) {
+      throw new Error("Pesan Error");
+    }
+
+    await client.set(`GETDATA-${toko}-${tanggal}`, JSON.stringify(dataReponse), { EX: 60 * 15 });
     return {
       code: 200,
       status: "Sukses",
@@ -186,7 +193,7 @@ const requestTask = async (client, token, dataPayload, urutReq) => {
           continue;
         }
 
-        await client.set(`GETDATA-${dataReponse[0].toko}-${dataReponse[0].tanggal}`, JSON.stringify(dataReponse), {
+        await client.set(`GETDATA-${dataReponse[0].toko}`, JSON.stringify(dataReponse), {
           EX: 60 * 15,
         });
       }
@@ -208,6 +215,7 @@ const requestTask = async (client, token, dataPayload, urutReq) => {
     };
   }
 };
+
 const loginTask = async () => {
   try {
     const payload = {
