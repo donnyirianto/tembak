@@ -24,7 +24,7 @@
     "line-reader": "^0.4.0",
     "mysql": "github:mysqljs/mysql",
     "mysql2": "^2.2.5",
-    "node-cron": "^3.0.2",
+    "node-cron": "^3.0.3",
     "node-pandas": "^1.0.5",
     "papaparse": "^5.4.1",
     "redis": "^4.6.13",

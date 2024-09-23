@@ -3,6 +3,8 @@ const { readRespSql, requestTask, loginTask } = require("./helpers/readresp");
 const { clientRedis } = require("./services/redis");
 const Papa = require("papaparse");
 const fs = require("fs");
+const dayjs =    require('dayjs');
+const cron = require('node-cron');
 
 const preparePayload = async (kdcab, toko, tanggal, query) => {
   try {
@@ -55,7 +57,7 @@ const doitBro = async () => {
 
     console.log("Running At : " + start);
 
-    const sudah = await clientRedis.keys("GETDATA*");
+    const sudah = await clientRedis.keys("strukol*");
 
     const listToko = sudah.length > 0 ? sudah.map((r) => `'${r.split("-")[1]}${r.split("-")[2]}'`).join(",") : "";
 
@@ -109,7 +111,7 @@ const doitBro = async () => {
         await requestTask(clientRedis, token, dataPayload, 1);
       }
 
-      const dataHasil = await clientRedis.keys("GETDATA*");
+      const dataHasil = await clientRedis.keys("strukol*");
 
       if (dataHasil.length > 0) {
         const prepare = dataHasil.map((r) => prepareData(clientRedis, r));
@@ -175,4 +177,28 @@ const doitBro = async () => {
   }
 };
 
-doitBro();
+var taskLoad = true;
+
+cron.schedule('*/45 * * * * *', async() => { 
+  //(async()=>{
+  try {
+     if (!taskLoad) {
+         return;
+     } 
+     taskLoad = false
+     
+    console.info(`[START] Proses Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`) 
+     
+
+     await doitBro();     
+     //await prosesInsertCabang(logger,client,query);
+
+console.info(`[FINISH] Proses  Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`) 
+
+     taskLoad = true
+
+ } catch (error) {
+    console.error(error);
+     taskLoad =true
+ } 
+});

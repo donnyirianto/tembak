@@ -193,7 +193,7 @@ const requestTask = async (client, token, dataPayload, urutReq) => {
           continue;
         }
 
-        await client.set(`GETDATA-${dataReponse[0].toko}`, JSON.stringify(dataReponse), {
+        await client.set(`strukol-${dataReponse[0].toko}`, JSON.stringify(dataReponse), {
           EX: 60 * 15,
         });
       }

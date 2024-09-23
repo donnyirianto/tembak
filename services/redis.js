@@ -1,9 +1,9 @@
 const redis = require("redis");
 
 const clientRedis = redis.createClient({
-  password: "KSZ5FV1NhAtjii4AhzXZn6E5Tyx3pzsVyMZre07puNsOZijg7VoEZWhgzvfetWehZCGdeYCTvfCqTcRk",
+  password: "edpho@idm",
   socket: {
-      host: '192.168.131.71',
+      host: '192.168.131.18',
       port: '6379'
   }
 });
