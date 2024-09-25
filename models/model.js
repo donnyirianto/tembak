@@ -64,7 +64,7 @@ const getTokoStruk = async (toko) => {
     const filter = toko.length > 0 ? `and concat(toko,tanggal) not in(${toko})` : "";
     const rows = await conn_ho.query(`
     select kdcab,toko,tanggal from summary_varian_2024 
-    where tanggal >= curdate() - interval 1 day
+    where tanggal >= curdate() - interval 2 DAY
     AND (lower(statusListener) not rlike 'succes' or statusListener is null)
     ${filter}
     order by tanggal,toko
