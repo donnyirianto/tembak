@@ -6,6 +6,9 @@ const fs = require("fs");
 const dayjs =    require('dayjs');
 const cron = require('node-cron');
 
+// !query lama
+// `SELECT (select kirim from toko) as kdcab, (select toko from toko) as toko, '${results[j].tanggal}' as tanggal,               cast(group_concat(replace(tanggal,'-',''),'-',station,shift,'-',docno) as char) as noStruk,count(*) as jmlStruk,sum(amount)  as nilaiStruk, group_concat(replace(isi_struk,"'","") SEPARATOR '\n') as isiStruk FROM struk_online WHERE tanggal='${results[j].tanggal}' and concat(tanggal,shift,station,docno) not in(select concat(tanggal,shift,station,docno) from mtran where tanggal='${results[j].tanggal}')`
+
 const preparePayload = async (kdcab, toko, tanggal, query) => {
   try {
     return {
@@ -75,7 +78,23 @@ const doitBro = async () => {
             results[j].kdcab,
             results[j].toko,
             results[j].tanggal,
-            `SELECT (select kirim from toko) as kdcab, (select toko from toko) as toko, '${results[j].tanggal}' as tanggal,               cast(group_concat(replace(tanggal,'-',''),'-',station,shift,'-',docno) as char) as noStruk,count(*) as jmlStruk,sum(amount)  as nilaiStruk, group_concat(replace(isi_struk,"'","") SEPARATOR '\n') as isiStruk FROM struk_online WHERE tanggal='${results[j].tanggal}' and concat(tanggal,shift,station,docno) not in(select concat(tanggal,shift,station,docno) from mtran where tanggal='${results[j].tanggal}')`
+            `SELECT a.kdcab, a.toko, b.tanggal, 
+            IFNULL(c.noStruk,0)noStruk,
+            CONVERT(IFNULL(c.jmlStruk,0), CHAR)jmlStruk, 
+            CONVERT(IFNULL(c.nilaistruk,0), CHAR)nilaiStruk, 
+            IFNULL(c.isiStruk,'')isiStruk 
+            FROM
+            (SELECT kirim AS kdcab, toko FROM toko) a LEFT JOIN
+            (SELECT (SELECT toko FROM toko)toko, '${results[j].tanggal}'tanggal) b on b.toko=a.toko left join
+            (SELECT (SELECT toko FROM toko)toko, a.tglStruk, count(concat(a.tglstruk, a.station, a.shift, a.docno))jmlStruk,
+            Group_concat(concat(DATE_FORMAT(a.tglstruk, '%Y%m%d'),'-', a.station, a.shift, '-', a.docno))noStruk,
+            Group_concat(a.isi_struk)isiStruk, sum(a.amount)nilaiStruk from
+            (SELECT a.*,b.plu FROM
+            (SELECT STR_TO_DATE(SUBSTR(isi_struk, LOCATE('/',isi_struk)-14,8),'%d.%m.%y') tglstruk,
+            s.* FROM struk_online s) a
+            LEFT JOIN mtran b
+            ON a.tglstruk=b.tanggal AND a.station=b.station AND a.shift=b.shift AND a.docno=b.docno
+            HAVING ISNULL(plu))a GROUP BY a.tanggal) c ON c.toko=a.toko and c.tglstruk=b.tanggal order by b.tanggal;`
           )
             .then((val) => {
               res(val);
@@ -93,7 +112,7 @@ const doitBro = async () => {
 
       const dataPayload = actTask_ok.map((r) => r.data);
 
-      if (dataPayload.length >= 50) {
+      if (dataPayload.length >= 100) {
         let allPromise2 = [
           requestTask(clientRedis, token, dataPayload.slice(0, 100), 1),
           requestTask(clientRedis, token, dataPayload.slice(100, 200), 2),
@@ -179,26 +198,26 @@ const doitBro = async () => {
 
 var taskLoad = true;
 
-cron.schedule('*/45 * * * * *', async() => { 
-  //(async()=>{
+cron.schedule('*/45 * * * *', async() => { 
+//  (async()=>{
   try {
-     if (!taskLoad) {
-         return;
-     } 
-     taskLoad = false
-     
+    if (!taskLoad) {
+      return;
+    } 
+    taskLoad = false
+
     console.info(`[START] Proses Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`) 
-     
 
-     await doitBro();     
-     //await prosesInsertCabang(logger,client,query);
 
-console.info(`[FINISH] Proses  Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`) 
+    await doitBro();     
+      //await prosesInsertCabang(logger,client,query);
 
-     taskLoad = true
+    console.info(`[FINISH] Proses  Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`) 
 
- } catch (error) {
-    console.error(error);
-     taskLoad =true
- } 
+    taskLoad = true
+
+  } catch (error) {
+      console.error(error);
+      taskLoad =true
+  } 
 });
