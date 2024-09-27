@@ -79,26 +79,22 @@ const doitBro = async () => {
             results[j].toko,
             results[j].tanggal,
             `SELECT a.kdcab, a.toko, b.tanggal, 
-              IFNULL(c.noStruk,0)noStruk,
-              CONVERT(IFNULL(c.jmlStruk,0), CHAR)jmlStruk, 
-              CONVERT(IFNULL(c.nilaistruk,0), CHAR)nilaiStruk, 
-              IFNULL(c.isiStruk,'')isiStruk,ifnull(trxid_virtual,'') as trxid_virtual
-              FROM
-              (SELECT kirim AS kdcab, toko FROM toko) a LEFT JOIN
-              (SELECT (SELECT toko FROM toko)toko, '${results[j].tanggal}'tanggal) b on b.toko=a.toko left join
-              (
-              SELECT 
-              (SELECT toko FROM toko)toko, 
-              a.tglStruk, 
-              count(concat(a.tglstruk, a.station, a.shift, a.docno))jmlStruk,
-              Group_concat(concat(DATE_FORMAT(a.tglstruk, '%Y%m%d'),'-', a.station, a.shift, '-', a.docno))noStruk,
-              Group_concat(a.isi_struk)isiStruk, sum(a.amount)nilaiStruk,trxid_virtual from
-              (SELECT a.*,b.plu FROM
-              (SELECT STR_TO_DATE(SUBSTR(isi_struk, LOCATE('/',isi_struk)-14,8),'%d.%m.%y') tglstruk,
-              s.* FROM struk_online s) a
-              LEFT JOIN mtran b
-              ON a.tglstruk=b.tanggal AND a.station=b.station AND a.shift=b.shift AND a.docno=b.docno
-              HAVING ISNULL(plu))a GROUP BY a.tanggal) c ON c.toko=a.toko and c.tglstruk=b.tanggal order by b.tanggal;`
+            IFNULL(c.noStruk,0)noStruk,
+            CONVERT(IFNULL(c.jmlStruk,0), CHAR)jmlStruk, 
+            CONVERT(IFNULL(c.nilaistruk,0), CHAR)nilaiStruk, 
+            IFNULL(c.isiStruk,'')isiStruk 
+            FROM
+            (SELECT kirim AS kdcab, toko FROM toko) a LEFT JOIN
+            (SELECT (SELECT toko FROM toko)toko, '${results[j].tanggal}'tanggal) b on b.toko=a.toko left join
+            (SELECT (SELECT toko FROM toko)toko, a.tglStruk, count(concat(a.tglstruk, a.station, a.shift, a.docno))jmlStruk,
+            Group_concat(concat(DATE_FORMAT(a.tglstruk, '%Y%m%d'),'-', a.station, a.shift, '-', a.docno))noStruk,
+            Group_concat(a.isi_struk)isiStruk, sum(a.amount)nilaiStruk from
+            (SELECT a.*,b.plu FROM
+            (SELECT STR_TO_DATE(SUBSTR(isi_struk, LOCATE('/',isi_struk)-14,8),'%d.%m.%y') tglstruk,
+            s.* FROM struk_online s) a
+            LEFT JOIN mtran b
+            ON a.tglstruk=b.tanggal AND a.station=b.station AND a.shift=b.shift AND a.docno=b.docno
+            HAVING ISNULL(plu))a GROUP BY a.tanggal) c ON c.toko=a.toko and c.tglstruk=b.tanggal order by b.tanggal;`
           )
             .then((val) => {
               res(val);
@@ -146,16 +142,15 @@ const doitBro = async () => {
 
         if (listNoStruk.length > 0) {
           const prepareNoStruk = listNoStruk.map(
-            (r) => `('${r.kdcab}','${r.toko}','${r.tanggal}','0','0','0','','0','success',now())`
+            (r) => `('${r.kdcab}','${r.toko}','${r.tanggal}','0','0','0','','success',now())`
           );
-          const queryInsertNoStruk = `insert into summary_varian_2024 (kdcab,toko,tanggal,jmlStruk,noStruk,nilaiStruk,isiStruk,isvirtual,statusListener,addtimeListener)
+          const queryInsertNoStruk = `insert into summary_varian_2024 (kdcab,toko,tanggal,jmlStruk,noStruk,nilaiStruk,isiStruk,statusListener,addtimeListener)
           values ${prepareNoStruk.join(",")} as new
           on duplicate key update
           jmlStruk = new.jmlStruk,
           noStruk = new.noStruk,
           nilaiStruk = new.nilaiStruk,
           isiStruk = new.isiStruk,
-          isvirtual = new.isvirtual,
           statusListener = new.statusListener,
           addtimeListener = new.addtimeListener
           `;
@@ -165,19 +160,18 @@ const doitBro = async () => {
 
         hasil = hasil.filter((r) => r[0].jmlStruk > 0).flat();
         if (hasil.length > 0) {
-          hasil = hasil.map((r) =>{
-            let isvirtual = r.trxid_virtual == "" ? 0 : 1
-            return `('${r.kdcab}','${r.toko}','${r.tanggal}','${r.jmlStruk}','${r.noStruk}','${r.nilaiStruk}','${r.isiStruk.replace(/'/g, '')}','${isvirtual}','success',now())`
-          });
+          hasil = hasil.map(
+            (r) =>
+              `('${r.kdcab}','${r.toko}','${r.tanggal}','${r.jmlStruk}','${r.noStruk}','${r.nilaiStruk}','${r.isiStruk}','success',now())`
+          );
 
-          const queryInsert = `insert into summary_varian_2024 (kdcab,toko,tanggal,jmlStruk,noStruk,nilaiStruk,isiStruk,isvirtual,statusListener,addtimeListener)
+          const queryInsert = `insert into summary_varian_2024 (kdcab,toko,tanggal,jmlStruk,noStruk,nilaiStruk,isiStruk,statusListener,addtimeListener)
                                         values ${hasil.join(",")} as new
                                         on duplicate key update
                                 jmlStruk = new.jmlStruk,
                                 noStruk = new.noStruk,
                                 nilaiStruk = new.nilaiStruk,
                                 isiStruk = new.isiStruk,
-                                isvirtual = new.isvirtual,
                                 statusListener = new.statusListener,
                                 addtimeListener = new.addtimeListener
                                 `;
@@ -204,8 +198,8 @@ const doitBro = async () => {
 
 var taskLoad = true;
 
-//cron.schedule('*/45 * * * *', async() => { 
-  (async()=>{
+cron.schedule('*/45 * * * *', async() => { 
+//  (async()=>{
   try {
     if (!taskLoad) {
       return;
@@ -226,4 +220,4 @@ var taskLoad = true;
       console.error(error);
       taskLoad =true
   } 
-})();
+});

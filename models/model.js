@@ -13,15 +13,7 @@ const fs = require("fs");
 --- user kasir new 2023-02 ----
 ydUcgx+VcZOXOvtX8CgOQerivop3oMXGk=WosaavE+Cm
 dan 
-5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPB
----- user kasir 2022 ----
-mJDC2ASrWJqKKlDFoh1WPiZWgy6oBwAKU=ljvYW1kTDi
---------------------------------
-kasir Lama
-cL/EohOGyT3uPR/HmG9zSpHt6/V8zPQKs=VunZtrQfh1
-kasir baru 2
-D5SgTTMDME9E4yLxI4CRw/+suEYGcL0YE=NmOUnkyrZZ
-kasir lama 
+5wRVkMKPJ8LufhKX2W+eJ3hi++btMn7Sc=XZT/xPyvPBlet filter = 
 iUL+J2zDwNbP1FEWjqpa4jZhPPB4yyDYE=MORFTmyGZn
 root1 
 5CCNQV3rio/dI/iboPPnww9nzUHh8bpac=fU59bpWfE4
@@ -64,8 +56,8 @@ const getTokoStruk = async (toko) => {
     const filter = toko.length > 0 ? `and concat(toko,tanggal) not in(${toko})` : "";
     const rows = await conn_ho.query(`
     select kdcab,toko,tanggal from summary_varian_2024 
-    where tanggal >= curdate() - interval 2 DAY
-    AND (lower(statusListener) not rlike 'succes' or statusListener is null)
+    where tanggal >='${dayjs().subtract(1, 'day').format("YYYY-MM")}-01'
+    AND (lower(statusListener) not rlike 'succes' or statusListener is null or jmlstruk > 10)
     ${filter}
     order by tanggal,toko
     ;
@@ -76,6 +68,23 @@ const getTokoStruk = async (toko) => {
     return "Error";
   }
 };
+
+const cekGetTokoStruk = async () => {
+  try {
+
+    const rows = await conn_ho.query(`select 
+      kdcab,toko,
+      STR_TO_DATE(SUBSTR(isistruk, LOCATE('/',isistruk)-14,8),'%d.%m.%y') as tanggal,
+      nostruk 
+      from summary_varian_2024_new`);
+
+    return rows;
+
+  } catch (e) {
+    return "Error";
+  }
+};
+
 
 const InsertDataStrukOl = async (query) => {
   try {
@@ -2063,6 +2072,18 @@ const updateFlagRSB = async (toko) => {
   }
 };
 
+const ipserver = async (kdcab) => {
+  try {
+    const rows = await conn_ho.query(`
+        select * from m_server_iris
+        WHERE jenis = 'IRIS'
+        and kdcab ='${kdcab}'`);
+    return rows;
+  } catch (e) {
+    return "Error";
+  }
+};
+
 module.exports = {
   getListRRAK,
   UpdateAbsenRrak,
@@ -2174,4 +2195,6 @@ module.exports = {
   getTokoStruk,
   InsertDataStrukOl,
   getListIpIris2,
+  cekGetTokoStruk,
+  ipserver
 };
