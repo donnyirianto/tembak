@@ -1,5 +1,5 @@
 const Models = require("./models/model");
-const { requestTask, loginTask } = require("./helpers/readresp");
+const { requestTaskNew, loginTask } = require("./helpers/readresp");
 const { clientRedis } = require("./services/redis");
 const Papa = require("papaparse");
 const fs = require("fs");
@@ -27,7 +27,21 @@ const prepareData = async (client, r) => {
   try {
     let dataCache = await client.get(r);
     if (!dataCache) throw new Error("Data not found");
-
+ 
+    let x = JSON.parse(dataCache)
+        x = x.map((r)=>{
+          return {
+            kdcab: r.kdcab,
+            toko: r.toko,
+            tanggal: r.tanggal,
+            station: r.shift,
+            docno: r.docno,
+            amount: r.amount,
+            nama_file: r.nama_file,
+            addid: r.addid,
+            addtime: r.addtime
+          }
+        })
     return {
       status: "Sukses",
       id: r,
@@ -63,8 +77,16 @@ const doitBro = async () => {
     // // ANCHOR ===============Query Ambil Data =========================
 
     // LISTENERS
-    const queryCheck2 =
-      "SELECT (select toko from toko) as toko,(select nama from toko) as nama,`desc`, updtime FROM const WHERE rkey ='E02'";
+    const queryCheck2 =`select a.kirim as kdcab, a.toko as toko, 
+          cast(b.tanggal as char) as tanggal,b.shift,b.station,b.docno,b.amount,b.nama_file,b.addid,
+          cast(b.addtime as char) as addtime
+          from toko a  
+          left join (
+          SELECT 
+          (select toko from toko) as toko,
+          tanggal,shift,station,docno,amount,nama_file,addid,addtime 
+          FROM BA_SALES_NONSTOK WHERE tanggal between '2024-09-01' AND '2024-09-30'
+          ) b on a.toko= b.toko;`
 
     let dataResult_gagal = [];
 
@@ -93,20 +115,20 @@ const doitBro = async () => {
 
       if (dataPayload.length >= 50) {
         let allPromise2 = [
-          requestTask(clientRedis, token, dataPayload.slice(0, 100), 1),
-          requestTask(clientRedis, token, dataPayload.slice(100, 200), 2),
-          requestTask(clientRedis, token, dataPayload.slice(200, 300), 3),
-          requestTask(clientRedis, token, dataPayload.slice(300, 400), 4),
-          requestTask(clientRedis, token, dataPayload.slice(400, 500), 5),
-          requestTask(clientRedis, token, dataPayload.slice(500, 600), 6),
-          requestTask(clientRedis, token, dataPayload.slice(600, 700), 7),
-          requestTask(clientRedis, token, dataPayload.slice(700, 800), 8),
-          requestTask(clientRedis, token, dataPayload.slice(800, 900), 9),
-          requestTask(clientRedis, token, dataPayload.slice(900, 1000), 10),
+          requestTaskNew(clientRedis, token, dataPayload.slice(0, 100), 1),
+          requestTaskNew(clientRedis, token, dataPayload.slice(100, 200), 2),
+          requestTaskNew(clientRedis, token, dataPayload.slice(200, 300), 3),
+          requestTaskNew(clientRedis, token, dataPayload.slice(300, 400), 4),
+          requestTaskNew(clientRedis, token, dataPayload.slice(400, 500), 5),
+          requestTaskNew(clientRedis, token, dataPayload.slice(500, 600), 6),
+          requestTaskNew(clientRedis, token, dataPayload.slice(600, 700), 7),
+          requestTaskNew(clientRedis, token, dataPayload.slice(700, 800), 8),
+          requestTaskNew(clientRedis, token, dataPayload.slice(800, 900), 9),
+          requestTaskNew(clientRedis, token, dataPayload.slice(900, 1000), 10),
         ];
         await Promise.allSettled(allPromise2);
       } else {
-        await requestTask(clientRedis, token, dataPayload, 1);
+        await requestTaskNew(clientRedis, token, dataPayload, 1);
       }
     }
 

@@ -9,8 +9,40 @@ const cron = require('node-cron');
 // !query lama
 // `SELECT (select kirim from toko) as kdcab, (select toko from toko) as toko, '${results[j].tanggal}' as tanggal,               cast(group_concat(replace(tanggal,'-',''),'-',station,shift,'-',docno) as char) as noStruk,count(*) as jmlStruk,sum(amount)  as nilaiStruk, group_concat(replace(isi_struk,"'","") SEPARATOR '\n') as isiStruk FROM struk_online WHERE tanggal='${results[j].tanggal}' and concat(tanggal,shift,station,docno) not in(select concat(tanggal,shift,station,docno) from mtran where tanggal='${results[j].tanggal}')`
 
-const preparePayload = async (kdcab, toko, tanggal, query) => {
+const preparePayload = async (kdcab, toko, tanggal ) => {
   try {
+    let kmpul = []
+    let x = tanggal.split(",")
+    for(let i of x){
+      kmpul.push(`SELECT (SELECT toko FROM toko) toko, '${i}' as tanggal`)
+    }
+ 
+    let querynya = `SELECT a.kdcab, a.toko, b.tanggal, 
+              IFNULL(c.noStruk,0)noStruk,
+              CONVERT(IFNULL(c.jmlStruk,0), CHAR)jmlStruk, 
+              CONVERT(IFNULL(c.nilaistruk,0), CHAR)nilaiStruk, 
+              IFNULL(c.isiStruk,'')isiStruk,ifnull(trxid_virtual,'') as trxid_virtual
+              FROM
+              (SELECT kirim AS kdcab, toko FROM toko) a LEFT JOIN
+              (
+                ${kmpul.join(" UNION ALL ")}
+              ) b on b.toko=a.toko left join
+              (
+              SELECT 
+              (
+                SELECT toko FROM toko)toko, 
+                a.tglStruk, 
+                count(concat(a.tglstruk, a.station, a.shift, a.docno))jmlStruk,
+                Group_concat(concat(DATE_FORMAT(a.tglstruk, '%Y%m%d'),'-', a.station, a.shift, '-', a.docno))noStruk,
+                Group_concat(a.isi_struk)isiStruk, sum(a.amount)nilaiStruk,trxid_virtual from
+                (SELECT a.*,b.plu FROM
+                (SELECT STR_TO_DATE(SUBSTR(isi_struk, LOCATE('/',isi_struk)-14,8),'%d.%m.%y') tglstruk,
+                s.* FROM struk_online s
+              ) a
+              LEFT JOIN mtran b
+              ON a.tglstruk=b.tanggal AND a.station=b.station AND a.shift=b.shift AND a.docno=b.docno
+              HAVING ISNULL(plu))a GROUP BY a.tanggal) c ON c.toko=a.toko and c.tglstruk=b.tanggal order by b.tanggal;`
+    
     return {
       status: "sukses",
       data: {
@@ -19,7 +51,7 @@ const preparePayload = async (kdcab, toko, tanggal, query) => {
         task: "SQL",
         idreport: `ambildatastruk-${toko}${tanggal}`,
         station: "01",
-        command: query,
+        command: querynya,
       },
     };
   } catch (error) {
@@ -67,7 +99,7 @@ const doitBro = async () => {
     const results = await Models.getTokoStruk(listToko);
 
     console.log(`Proses Data: ${results.length}`);
-
+ 
     //ANCHOR ===============Query Ambil Data =========================
     for (let i = 0; i < results.length; i += 1000) {
       console.log(`[collect] run ${i}-${Math.min(i + 1000, results.length)}`);
@@ -77,28 +109,7 @@ const doitBro = async () => {
           preparePayload(
             results[j].kdcab,
             results[j].toko,
-            results[j].tanggal,
-            `SELECT a.kdcab, a.toko, b.tanggal, 
-              IFNULL(c.noStruk,0)noStruk,
-              CONVERT(IFNULL(c.jmlStruk,0), CHAR)jmlStruk, 
-              CONVERT(IFNULL(c.nilaistruk,0), CHAR)nilaiStruk, 
-              IFNULL(c.isiStruk,'')isiStruk,ifnull(trxid_virtual,'') as trxid_virtual
-              FROM
-              (SELECT kirim AS kdcab, toko FROM toko) a LEFT JOIN
-              (SELECT (SELECT toko FROM toko)toko, '${results[j].tanggal}'tanggal) b on b.toko=a.toko left join
-              (
-              SELECT 
-              (SELECT toko FROM toko)toko, 
-              a.tglStruk, 
-              count(concat(a.tglstruk, a.station, a.shift, a.docno))jmlStruk,
-              Group_concat(concat(DATE_FORMAT(a.tglstruk, '%Y%m%d'),'-', a.station, a.shift, '-', a.docno))noStruk,
-              Group_concat(a.isi_struk)isiStruk, sum(a.amount)nilaiStruk,trxid_virtual from
-              (SELECT a.*,b.plu FROM
-              (SELECT STR_TO_DATE(SUBSTR(isi_struk, LOCATE('/',isi_struk)-14,8),'%d.%m.%y') tglstruk,
-              s.* FROM struk_online s) a
-              LEFT JOIN mtran b
-              ON a.tglstruk=b.tanggal AND a.station=b.station AND a.shift=b.shift AND a.docno=b.docno
-              HAVING ISNULL(plu))a GROUP BY a.tanggal) c ON c.toko=a.toko and c.tglstruk=b.tanggal order by b.tanggal;`
+            results[j].tanggal
           )
             .then((val) => {
               res(val);
@@ -111,6 +122,7 @@ const doitBro = async () => {
       }
 
       let actTask = await Promise.allSettled(allPromise);
+      
       actTask = actTask.filter((e) => e.status === "fulfilled").map((r) => r.value);
       let actTask_ok = actTask.filter((r) => r.status === "sukses");
 
@@ -141,8 +153,10 @@ const doitBro = async () => {
         const dataCacheResult = await Promise.allSettled(prepare);
         let dataResultCache = dataCacheResult.filter((r) => r.status === "fulfilled").map((r) => r.value);
         let hasil = dataResultCache.filter((r) => r.status === "Sukses").map((r) => r.data);
-
-        const listNoStruk = hasil.filter((r) => r[0].jmlStruk == 0).flat();
+        
+        
+        hasil = hasil.flat()
+        const listNoStruk = hasil.filter((r) => r.jmlStruk == 0).flat();
 
         if (listNoStruk.length > 0) {
           const prepareNoStruk = listNoStruk.map(
@@ -159,11 +173,11 @@ const doitBro = async () => {
           statusListener = new.statusListener,
           addtimeListener = new.addtimeListener
           `;
-
+          
           await Models.InsertDataStrukOl(queryInsertNoStruk);
         }
-
-        hasil = hasil.filter((r) => r[0].jmlStruk > 0).flat();
+        
+        hasil = hasil.filter((r) => r.jmlStruk > 0).flat();
         if (hasil.length > 0) {
           hasil = hasil.map((r) =>{
             let isvirtual = r.trxid_virtual == "" ? 0 : 1
@@ -181,7 +195,7 @@ const doitBro = async () => {
                                 statusListener = new.statusListener,
                                 addtimeListener = new.addtimeListener
                                 `;
-
+                                
           await Models.InsertDataStrukOl(queryInsert);
         }
       }
@@ -204,8 +218,8 @@ const doitBro = async () => {
 
 var taskLoad = true;
 
-//cron.schedule('*/45 * * * *', async() => { 
-  (async()=>{
+cron.schedule('*/45 * * * *', async() => { 
+  //(async()=>{
   try {
     if (!taskLoad) {
       return;
@@ -213,7 +227,6 @@ var taskLoad = true;
     taskLoad = false
 
     console.info(`[START] Proses Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`) 
-
 
     await doitBro();     
       //await prosesInsertCabang(logger,client,query);
@@ -226,4 +239,4 @@ var taskLoad = true;
       console.error(error);
       taskLoad =true
   } 
-})();
+});

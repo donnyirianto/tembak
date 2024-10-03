@@ -40,8 +40,7 @@ const getToko = async () => {
   try {
     const rows = await conn_ho.query(`
         select kdcab,toko from m_toko_aktif 
-        where tanggal =curdate()-1
-        and kdcab ='G025'
+        where tanggal =curdate()
     `);
 
     return rows;
@@ -53,14 +52,15 @@ const getToko = async () => {
 const getTokoStruk = async (toko) => {
   try {
     //--AND statusListener is null
+    //AND (lower(statusListener) not rlike 'succes' or statusListener is null or jmlstruk > 10)
+    //${filter}
     const filter = toko.length > 0 ? `and concat(toko,tanggal) not in(${toko})` : "";
     const rows = await conn_ho.query(`
-    select kdcab,toko,tanggal from summary_varian_2024 
-    where tanggal >='${dayjs().subtract(1, 'day').format("YYYY-MM")}-01'
+    select kdcab,toko,group_concat(tanggal) as tanggal from summary_varian_2024 
+    where tanggal >= '${dayjs().subtract(2,'day').format("YYYY-MM-DD")}'
     AND (lower(statusListener) not rlike 'succes' or statusListener is null or jmlstruk > 10)
-    ${filter}
-    order by tanggal,toko
-    ;
+    ${filter} 
+    group by kdcab,toko;
     `);
 
     return rows;
@@ -148,9 +148,7 @@ const UpdateRetur = async (r) => {
 };
 const getListIpSpdmast = async () => {
   try {
-    //,'G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224'
-    //and kdcab in('G004','G030','G025','G034','G097','G030','G149','G146','G148','G158','G174','G301','G305','G177','G232','G224','G236','G237')
-
+   
     const [rows] = await conn_ho.query(`
         select kodegudang as kdcab, kodetoko as toko from posrealtime_base.toko_extended
         WHERE LEFT (kodetoko,1) NOT IN('D','G','W','B','R')
