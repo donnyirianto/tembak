@@ -3,20 +3,20 @@ const { readRespSql, requestTask, loginTask } = require("./helpers/readresp");
 const { clientRedis } = require("./services/redis");
 const Papa = require("papaparse");
 const fs = require("fs");
-const dayjs =    require('dayjs');
-const cron = require('node-cron');
+const dayjs = require("dayjs");
+const cron = require("node-cron");
 
 // !query lama
 // `SELECT (select kirim from toko) as kdcab, (select toko from toko) as toko, '${results[j].tanggal}' as tanggal,               cast(group_concat(replace(tanggal,'-',''),'-',station,shift,'-',docno) as char) as noStruk,count(*) as jmlStruk,sum(amount)  as nilaiStruk, group_concat(replace(isi_struk,"'","") SEPARATOR '\n') as isiStruk FROM struk_online WHERE tanggal='${results[j].tanggal}' and concat(tanggal,shift,station,docno) not in(select concat(tanggal,shift,station,docno) from mtran where tanggal='${results[j].tanggal}')`
 
-const preparePayload = async (kdcab, toko, tanggal ) => {
+const preparePayload = async (kdcab, toko, tanggal) => {
   try {
-    let kmpul = []
-    let x = tanggal.split(",")
-    for(let i of x){
-      kmpul.push(`SELECT (SELECT toko FROM toko) toko, '${i}' as tanggal`)
+    let kmpul = [];
+    let x = tanggal.split(",");
+    for (let i of x) {
+      kmpul.push(`SELECT (SELECT toko FROM toko) toko, '${i}' as tanggal`);
     }
- 
+
     let querynya = `SELECT a.kdcab, a.toko, b.tanggal, 
               IFNULL(c.noStruk,0)noStruk,
               CONVERT(IFNULL(c.jmlStruk,0), CHAR)jmlStruk, 
@@ -41,8 +41,8 @@ const preparePayload = async (kdcab, toko, tanggal ) => {
               ) a
               LEFT JOIN mtran b
               ON a.tglstruk=b.tanggal AND a.station=b.station AND a.shift=b.shift AND a.docno=b.docno
-              HAVING ISNULL(plu))a GROUP BY a.tanggal) c ON c.toko=a.toko and c.tglstruk=b.tanggal order by b.tanggal;`
-    
+              HAVING ISNULL(plu))a GROUP BY a.tanggal) c ON c.toko=a.toko and c.tglstruk=b.tanggal order by b.tanggal;`;
+
     return {
       status: "sukses",
       data: {
@@ -99,18 +99,14 @@ const doitBro = async () => {
     const results = await Models.getTokoStruk(listToko);
 
     console.log(`Proses Data: ${results.length}`);
- 
+
     //ANCHOR ===============Query Ambil Data =========================
     for (let i = 0; i < results.length; i += 1000) {
       console.log(`[collect] run ${i}-${Math.min(i + 1000, results.length)}`);
       let allPromise = [];
       for (let j = i; j < Math.min(i + 1000, results.length); j++) {
         const promise = new Promise((res, rej) => {
-          preparePayload(
-            results[j].kdcab,
-            results[j].toko,
-            results[j].tanggal
-          )
+          preparePayload(results[j].kdcab, results[j].toko, results[j].tanggal)
             .then((val) => {
               res(val);
             })
@@ -122,7 +118,7 @@ const doitBro = async () => {
       }
 
       let actTask = await Promise.allSettled(allPromise);
-      
+
       actTask = actTask.filter((e) => e.status === "fulfilled").map((r) => r.value);
       let actTask_ok = actTask.filter((r) => r.status === "sukses");
 
@@ -153,9 +149,8 @@ const doitBro = async () => {
         const dataCacheResult = await Promise.allSettled(prepare);
         let dataResultCache = dataCacheResult.filter((r) => r.status === "fulfilled").map((r) => r.value);
         let hasil = dataResultCache.filter((r) => r.status === "Sukses").map((r) => r.data);
-        
-        
-        hasil = hasil.flat()
+
+        hasil = hasil.flat();
         const listNoStruk = hasil.filter((r) => r.jmlStruk == 0).flat();
 
         if (listNoStruk.length > 0) {
@@ -173,15 +168,17 @@ const doitBro = async () => {
           statusListener = new.statusListener,
           addtimeListener = new.addtimeListener
           `;
-          
+
           await Models.InsertDataStrukOl(queryInsertNoStruk);
         }
-        
+
         hasil = hasil.filter((r) => r.jmlStruk > 0).flat();
         if (hasil.length > 0) {
-          hasil = hasil.map((r) =>{
-            let isvirtual = r.trxid_virtual == "" ? 0 : 1
-            return `('${r.kdcab}','${r.toko}','${r.tanggal}','${r.jmlStruk}','${r.noStruk}','${r.nilaiStruk}','${r.isiStruk.replace(/'/g, '')}','${isvirtual}','success',now())`
+          hasil = hasil.map((r) => {
+            let isvirtual = r.trxid_virtual == "" ? 0 : 1;
+            return `('${r.kdcab}','${r.toko}','${r.tanggal}','${r.jmlStruk}','${r.noStruk}','${
+              r.nilaiStruk
+            }','${r.isiStruk.replace(/'/g, "")}','${isvirtual}','success',now())`;
           });
 
           const queryInsert = `insert into summary_varian_2024 (kdcab,toko,tanggal,jmlStruk,noStruk,nilaiStruk,isiStruk,isvirtual,statusListener,addtimeListener)
@@ -195,7 +192,7 @@ const doitBro = async () => {
                                 statusListener = new.statusListener,
                                 addtimeListener = new.addtimeListener
                                 `;
-                                
+
           await Models.InsertDataStrukOl(queryInsert);
         }
       }
@@ -218,25 +215,24 @@ const doitBro = async () => {
 
 var taskLoad = true;
 
-cron.schedule('*/45 * * * *', async() => { 
-  //(async()=>{
+cron.schedule("*/15 * * * *", async () => {
+  //(async () => {
   try {
     if (!taskLoad) {
       return;
-    } 
-    taskLoad = false
+    }
+    taskLoad = false;
 
-    console.info(`[START] Proses Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`) 
+    console.info(`[START] Proses Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`);
 
-    await doitBro();     
-      //await prosesInsertCabang(logger,client,query);
+    await doitBro();
+    //await prosesInsertCabang(logger,client,query);
 
-    console.info(`[FINISH] Proses  Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`) 
+    console.info(`[FINISH] Proses  Struk OL:  ${dayjs().format("YYYY-MM-DD HH:mm:ss")}`);
 
-    taskLoad = true
-
+    taskLoad = true;
   } catch (error) {
-      console.error(error);
-      taskLoad =true
-  } 
+    console.error(error);
+    taskLoad = true;
+  }
 });

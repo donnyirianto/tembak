@@ -12,7 +12,7 @@ const preparePayload = async (kdcab, toko, query) => {
         kdcab: kdcab,
         toko: toko,
         task: "SQL",
-        idreport: `ambildatatoko-${toko}`,
+        idreport: `GETDATA-${toko}`,
         station: "01",
         command: query,
       },
@@ -27,21 +27,7 @@ const prepareData = async (client, r) => {
   try {
     let dataCache = await client.get(r);
     if (!dataCache) throw new Error("Data not found");
- 
-    let x = JSON.parse(dataCache)
-        x = x.map((r)=>{
-          return {
-            kdcab: r.kdcab,
-            toko: r.toko,
-            tanggal: r.tanggal,
-            station: r.shift,
-            docno: r.docno,
-            amount: r.amount,
-            nama_file: r.nama_file,
-            addid: r.addid,
-            addtime: r.addtime
-          }
-        })
+
     return {
       status: "Sukses",
       id: r,
@@ -65,10 +51,10 @@ const doitBro = async () => {
       await clientRedis.set(`token-ess`, token, { EX: 60 * 50 });
     }
 
-    const x = await clientRedis.keys("GETDATA-*");
-    x.forEach(async (r) => {
-      await clientRedis.del(r);
-    });
+    // const x = await clientRedis.keys("GETDATA-*");
+    // x.forEach(async (r) => {
+    //   await clientRedis.del(r);
+    // });
     const start = new Date();
     console.log("Running At : " + start);
 
@@ -77,16 +63,48 @@ const doitBro = async () => {
     // // ANCHOR ===============Query Ambil Data =========================
 
     // LISTENERS
-    const queryCheck2 =`select a.kirim as kdcab, a.toko as toko, 
-          cast(b.tanggal as char) as tanggal,b.shift,b.station,b.docno,b.amount,b.nama_file,b.addid,
-          cast(b.addtime as char) as addtime
-          from toko a  
-          left join (
-          SELECT 
-          (select toko from toko) as toko,
-          tanggal,shift,station,docno,amount,nama_file,addid,addtime 
-          FROM BA_SALES_NONSTOK WHERE tanggal between '2024-09-01' AND '2024-09-30'
-          ) b on a.toko= b.toko;`
+    const queryCheck2 = `SET @transfer_number_mulai := 0;
+SELECT *, (select toko from toko) as toko,(select kirim from toko) as kdcab FROM
+(
+SELECT 
+    cast(DATE(tgl) as char) AS Tanggal,
+    cast((NOW() - INTERVAL (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS  WHERE VARIABLE_NAME = 'Uptime') SECOND) as char) AS Sql_Start,
+    (SELECT MIN(trn_start) FROM initial WHERE tanggal=CURDATE()-1) Initial,
+    TIME(MAX(CASE WHEN \`log\` RLIKE 'mulai transfer harian' THEN tgl END)) AS Mulai,
+    TIME(MAX(CASE WHEN \`log\` RLIKE 'system.io' AND \`log\` NOT RLIKE 'timeout' THEN tgl ELSE 0 END)) AS \`File\`,
+    TIME(MAX(CASE WHEN \`log\` RLIKE 'MySqlException' AND \`log\` NOT RLIKE 'timeout' THEN tgl ELSE 0 END)) AS \`Database\`,
+    TIME(MAX(CASE WHEN \`log\` RLIKE 'lock wait' THEN tgl ELSE 0 END)) AS \`Program\`,
+    TIME(MAX(CASE WHEN \`log\` RLIKE 'memory' AND \`log\` NOT RLIKE 'timeout' THEN tgl ELSE 0 END)) AS \`Memory\`,
+    TIME(MAX(CASE WHEN \`log\` RLIKE "Can't create" THEN tgl ELSE 0 END)) AS \`Corrupt\`,
+    TIME(MAX(CASE WHEN \`log\` RLIKE 'selesai transfer harian' THEN tgl ELSE 0 END)) AS Selesai,
+    IFNULL(TIMEDIFF(
+        MAX(CASE WHEN \`log\` RLIKE 'selesai transfer harian' THEN tgl ELSE 0 END),
+        MAX(CASE WHEN \`log\` RLIKE 'mulai transfer harian' THEN tgl ELSE 0 END)
+    ),TIME(0)) AS Durasi,addid
+FROM (
+    SELECT 
+        tgl,
+        \`log\`,
+        CASE
+            WHEN \`log\` RLIKE 'mulai transfer harian' THEN @transfer_number_mulai := @transfer_number_mulai + 1
+            WHEN \`log\` RLIKE 'system.io' AND \`log\` NOT RLIKE 'timeout' THEN @transfer_number_mulai
+            WHEN \`log\` RLIKE 'MySqlException' AND \`log\` NOT RLIKE 'timeout'  THEN @transfer_number_mulai
+            WHEN \`log\` RLIKE 'Lock wait'  THEN  @transfer_number_mulai
+            WHEN \`log\` RLIKE 'memory' AND \`log\` NOT RLIKE 'timeout' THEN @transfer_number_mulai
+            WHEN \`log\` RLIKE "Can't create" THEN @transfer_number_mulai
+            WHEN \`log\` RLIKE 'selesai transfer harian' THEN  @transfer_number_mulai
+        END AS Nomor,
+        addid
+    FROM tracelog
+    WHERE DATE(tgl) = CURDATE()-1 AND appname RLIKE 'posidm' 
+    AND \`log\` RLIKE "mulai transfer harian|selesai transfer harian|system.io|MySqlException|Lock wait|memory|Can't create"
+    ORDER BY idtracelog ASC
+) a
+GROUP BY Nomor,addid
+) a
+WHERE TIME(selesai) <>0 AND 
+(TIME(\`file\`) <> 0 OR TIME(\`database\`) <>0 OR TIME(\`program\`) <>0 OR TIME(\`memory\`) <>0 OR TIME(\`corrupt\`) <>0) 
+LIMIT 1;`;
 
     let dataResult_gagal = [];
 
@@ -143,7 +161,7 @@ const doitBro = async () => {
       fs.writeFileSync("data_sukses.csv", csv_sukses);
     }
     dataHasil.forEach(async (r) => {
-      await clientRedis.del(r);
+      //await clientRedis.del(r);
     });
 
     const csv_gagal = Papa.unparse(dataResult_gagal, { delimiter: "|" });

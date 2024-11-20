@@ -160,18 +160,18 @@ function sleep(ms) {
 const requestTask = async (client, token, dataPayload, urutReq) => {
   try {
     await sleep(urutReq * 1000);
-    const start = dayjs().format("YYYY-MM-DD HH:mm:ss")
+    const start = dayjs().format("YYYY-MM-DD HH:mm:ss");
     console.log(`Urutan Request: ${urutReq} - ${dayjs().format("YYYY-MM-DD HH:mm:ss.SSS")}`);
-    
+
     const respTask = await axios.post("http://172.24.52.14:7321/ReportFromListener/v1/CekStore", dataPayload, {
       headers: {
         Token: `${token}`,
       },
       timeout: 300000,
-    }); 
+    });
     const end = dayjs().format("YYYY-MM-DD HH:mm:ss");
-    const selsai = dayjs().diff(start)
-    console.log("request ke - ", urutReq, `Start: ${start},  end: ${end}, selesai: ${selsai}`, );
+    const selsai = dayjs().diff(start);
+    console.log("request ke - ", urutReq, `Start: ${start},  end: ${end}, selesai: ${selsai}`);
     if (respTask.data.code == "200") {
       let readResponse = JSON.parse(respTask.data.data);
 
@@ -217,22 +217,21 @@ const requestTask = async (client, token, dataPayload, urutReq) => {
   }
 };
 
-
 const requestTaskNew = async (client, token, dataPayload, urutReq) => {
   try {
     await sleep(urutReq * 1000);
-    const start = dayjs().format("YYYY-MM-DD HH:mm:ss")
+    const start = dayjs().format("YYYY-MM-DD HH:mm:ss");
     console.log(`Urutan Request: ${urutReq} - ${dayjs().format("YYYY-MM-DD HH:mm:ss.SSS")}`);
-    
-    const respTask = await axios.post("http://172.24.52.14:7321/ReportFromListener/v1/CekStore", dataPayload, {
+
+    const respTask = await axios.post("http://172.24.52.10:7321/ReportFromListener/v1/CekStore", dataPayload, {
       headers: {
         Token: `${token}`,
       },
       timeout: 300000,
-    }); 
+    });
     const end = dayjs().format("YYYY-MM-DD HH:mm:ss");
-    const selsai = dayjs().diff(start)
-    console.log("request ke - ", urutReq, `Start: ${start},  end: ${end}, selesai: ${selsai}`, );
+    const selsai = dayjs().diff(start);
+    console.log("request ke - ", urutReq, `Start: ${start},  end: ${end}, selesai: ${selsai}`);
     if (respTask.data.code == "200") {
       let readResponse = JSON.parse(respTask.data.data);
 
@@ -244,20 +243,42 @@ const requestTaskNew = async (client, token, dataPayload, urutReq) => {
         let dataReponse = [];
         if (dataRes.msg != "Succes SQL Native") {
           let u = JSON.parse(dataRes.data);
-          let x = JSON.parse(u);
-          dataReponse = x;
+
+          for (let detail of u) {
+            try {
+              let x = JSON.parse(detail);
+              if (!x[0].hasOwnProperty("pesan")) {
+                dataReponse.push(...x);
+              }
+            } catch (error) {
+              console.error(`Error parsing JSON: ${error.message} value: ${detail}`);
+              continue;
+            }
+          }
         } else {
-          dataReponse = JSON.parse(dataRes.data);
+          let u = JSON.parse(dataRes.data);
+          for (let detail of u) {
+            try {
+              let x = JSON.parse(detail);
+              if (!x[0].hasOwnProperty("pesan")) {
+                dataReponse.push(...x);
+              }
+            } catch (error) {
+              console.error(`Error parsing JSON: ${error.message}`);
+              continue;
+            }
+          }
         }
 
         if (dataReponse.hasOwnProperty("error") || dataReponse.hasOwnProperty("pesan")) {
           console.log("Error");
           continue;
         }
-
-        await client.set(`GETDATA-${dataReponse[0].toko}`, JSON.stringify(dataReponse), {
-          EX: 60 * 60 * 15,
-        });
+        if (dataReponse.length > 0) {
+          await client.set(`GETDATA-${dataReponse[0].toko}`, JSON.stringify(dataReponse), {
+            EX: 60 * 60 * 15,
+          });
+        }
       }
 
       return {
@@ -270,14 +291,13 @@ const requestTaskNew = async (client, token, dataPayload, urutReq) => {
       msg: JSON.stringify(respTask.data),
     };
   } catch (e) {
-    console.log("request ke - ", urutReq, "GAGAl", `${e.code}: ${e.errno}`);
+    console.log("request ke - ", urutReq, "GAGAl", `${e}:`);
     return {
       status: "ERROR",
       msg: `${e.code}: ${e.errno}`,
     };
   }
 };
-
 
 const loginTask = async () => {
   try {
@@ -310,5 +330,5 @@ module.exports = {
   readRespCmd,
   requestTask,
   loginTask,
-  requestTaskNew
+  requestTaskNew,
 };
