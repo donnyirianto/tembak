@@ -51,10 +51,10 @@ const doitBro = async () => {
       await clientRedis.set(`token-ess`, token, { EX: 60 * 50 });
     }
 
-    // const x = await clientRedis.keys("GETDATA-*");
-    // x.forEach(async (r) => {
-    //   await clientRedis.del(r);
-    // });
+    const x = await clientRedis.keys("GETDATA-*");
+    x.forEach(async (r) => {
+      await clientRedis.del(r);
+    });
     const start = new Date();
     console.log("Running At : " + start);
 
@@ -102,7 +102,7 @@ FROM (
 ) a
 GROUP BY Nomor,addid
 ) a
-WHERE TIME(selesai) <>0 AND 
+WHERE TIME(selesai) = 0 AND 
 (TIME(\`file\`) <> 0 OR TIME(\`database\`) <>0 OR TIME(\`program\`) <>0 OR TIME(\`memory\`) <>0 OR TIME(\`corrupt\`) <>0) 
 LIMIT 1;`;
 
