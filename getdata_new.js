@@ -63,48 +63,24 @@ const doitBro = async () => {
     // // ANCHOR ===============Query Ambil Data =========================
 
     // LISTENERS
-    const queryCheck2 = `SET @transfer_number_mulai := 0;
-SELECT *, (select toko from toko) as toko,(select kirim from toko) as kdcab FROM
-(
-SELECT 
-    cast(DATE(tgl) as char) AS Tanggal,
-    cast((NOW() - INTERVAL (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS  WHERE VARIABLE_NAME = 'Uptime') SECOND) as char) AS Sql_Start,
-    (SELECT MIN(trn_start) FROM initial WHERE tanggal=CURDATE()-1) Initial,
-    TIME(MAX(CASE WHEN \`log\` RLIKE 'mulai transfer harian' THEN tgl END)) AS Mulai,
-    TIME(MAX(CASE WHEN \`log\` RLIKE 'system.io' AND \`log\` NOT RLIKE 'timeout' THEN tgl ELSE 0 END)) AS \`File\`,
-    TIME(MAX(CASE WHEN \`log\` RLIKE 'MySqlException' AND \`log\` NOT RLIKE 'timeout' THEN tgl ELSE 0 END)) AS \`Database\`,
-    TIME(MAX(CASE WHEN \`log\` RLIKE 'lock wait' THEN tgl ELSE 0 END)) AS \`Program\`,
-    TIME(MAX(CASE WHEN \`log\` RLIKE 'memory' AND \`log\` NOT RLIKE 'timeout' THEN tgl ELSE 0 END)) AS \`Memory\`,
-    TIME(MAX(CASE WHEN \`log\` RLIKE "Can't create" THEN tgl ELSE 0 END)) AS \`Corrupt\`,
-    TIME(MAX(CASE WHEN \`log\` RLIKE 'selesai transfer harian' THEN tgl ELSE 0 END)) AS Selesai,
-    IFNULL(TIMEDIFF(
-        MAX(CASE WHEN \`log\` RLIKE 'selesai transfer harian' THEN tgl ELSE 0 END),
-        MAX(CASE WHEN \`log\` RLIKE 'mulai transfer harian' THEN tgl ELSE 0 END)
-    ),TIME(0)) AS Durasi,addid
-FROM (
-    SELECT 
-        tgl,
-        \`log\`,
-        CASE
-            WHEN \`log\` RLIKE 'mulai transfer harian' THEN @transfer_number_mulai := @transfer_number_mulai + 1
-            WHEN \`log\` RLIKE 'system.io' AND \`log\` NOT RLIKE 'timeout' THEN @transfer_number_mulai
-            WHEN \`log\` RLIKE 'MySqlException' AND \`log\` NOT RLIKE 'timeout'  THEN @transfer_number_mulai
-            WHEN \`log\` RLIKE 'Lock wait'  THEN  @transfer_number_mulai
-            WHEN \`log\` RLIKE 'memory' AND \`log\` NOT RLIKE 'timeout' THEN @transfer_number_mulai
-            WHEN \`log\` RLIKE "Can't create" THEN @transfer_number_mulai
-            WHEN \`log\` RLIKE 'selesai transfer harian' THEN  @transfer_number_mulai
-        END AS Nomor,
-        addid
-    FROM tracelog
-    WHERE DATE(tgl) = CURDATE()-1 AND appname RLIKE 'posidm' 
-    AND \`log\` RLIKE "mulai transfer harian|selesai transfer harian|system.io|MySqlException|Lock wait|memory|Can't create"
-    ORDER BY idtracelog ASC
-) a
-GROUP BY Nomor,addid
-) a
-WHERE TIME(selesai) = 0 AND 
-(TIME(\`file\`) <> 0 OR TIME(\`database\`) <>0 OR TIME(\`program\`) <>0 OR TIME(\`memory\`) <>0 OR TIME(\`corrupt\`) <>0) 
-LIMIT 1;`;
+    const queryCheck2 = `SELECT  
+          (select kirim from toko) as kdcab, 
+          (select toko from toko) as kdtk, 
+          (select nama from toko) as nama_toko,
+          cast(ifnull(A.TANGGAL,'2024-11-27') as char) as TANGGAL,A.STATION, A.SHIFT,A.NIK,A.KASIR_NAME,A.TRN_START, A.TOTAL_SHIFT, B.STRUK_AWAL,B.TOTAL 
+          from 
+          (
+            select TANGGAL,STATION,SHIFT,NIK,KASIR_NAME,min(TRN_START) as TRN_START,count(*) as TOTAL_SHIFT
+            FROM INITIAL WHERE TANGGAL=CURDATE() 
+            and recid = '' 
+            AND STATION<>'I1' 
+            and trn_start>='04:00' 
+            order by trn_start asc limit 1
+          ) A
+          left join 
+          (select TANGGAL,SHIFT,STATION, min(jam) AS STRUK_AWAL,count(*) AS TOTAL FROM MTRAN WHERE TANGGAL=CURDATE() GROUP BY STATION,SHIFT) B
+          ON CONCAT(A.STATION,A.SHIFT) = CONCAT(B.STATION, B.SHIFT);
+          `;
 
     let dataResult_gagal = [];
 

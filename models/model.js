@@ -42,10 +42,21 @@ const getToko = async () => {
     const rows = await conn_ho.query(`
         select kdcab,toko from m_toko_aktif 
         where tanggal =curdate()
-        and kdcab in(select kdcab from m_server_iris where jenis = 'IRIS' and reg = 'reg4')
+        and kdcab in(select kdcab from m_server_iris where jenis = 'IRIS' and reg='REG4')
+        and toko not in(select kdtk from initial where tanggal !='0000-00-00')
     `);
 
     return rows;
+  } catch (e) {
+    return "Error";
+  }
+};
+
+const InsertDataInitial = async (data) => {
+  try {
+    await conn_ho.query(`replace into initial values ${data};`);
+
+    return "Sukses";
   } catch (e) {
     return "Error";
   }
@@ -2193,4 +2204,5 @@ module.exports = {
   getListIpIris2,
   cekGetTokoStruk,
   ipserver,
+  InsertDataInitial,
 };
