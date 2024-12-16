@@ -12,6 +12,7 @@
     "axios": "^0.27.2",
     "basic-ftp": "^4.6.6",
     "convert-csv-to-json": "^2.0.0",
+    "crypto": "^1.0.1",
     "csv-parser": "^3.0.0",
     "csvtojson": "^2.0.10",
     "dateformat": "^4.5.1",

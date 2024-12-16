@@ -3,9 +3,11 @@ const { requestTaskNew, loginTask } = require("./helpers/readresp");
 const { clientRedis } = require("./services/redis");
 const Papa = require("papaparse");
 const fs = require("fs");
+const { getAESEncrypted } = require("./helpers/encrypt");
 
 const preparePayload = async (kdcab, toko, query) => {
   try {
+    const payloadEncrypted = await getAESEncrypted(query);
     return {
       status: "sukses",
       data: {
@@ -14,7 +16,7 @@ const preparePayload = async (kdcab, toko, query) => {
         task: "SQL",
         idreport: `GETDATA-${toko}`,
         station: "01",
-        command: query,
+        command: payloadEncrypted,
       },
     };
   } catch (error) {

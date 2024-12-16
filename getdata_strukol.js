@@ -5,6 +5,7 @@ const Papa = require("papaparse");
 const fs = require("fs");
 const dayjs = require("dayjs");
 const cron = require("node-cron");
+const { getAESEncrypted } = require("./helpers/encrypt");
 
 // !query lama
 // `SELECT (select kirim from toko) as kdcab, (select toko from toko) as toko, '${results[j].tanggal}' as tanggal,               cast(group_concat(replace(tanggal,'-',''),'-',station,shift,'-',docno) as char) as noStruk,count(*) as jmlStruk,sum(amount)  as nilaiStruk, group_concat(replace(isi_struk,"'","") SEPARATOR '\n') as isiStruk FROM struk_online WHERE tanggal='${results[j].tanggal}' and concat(tanggal,shift,station,docno) not in(select concat(tanggal,shift,station,docno) from mtran where tanggal='${results[j].tanggal}')`
@@ -43,6 +44,7 @@ const preparePayload = async (kdcab, toko, tanggal) => {
               ON a.tglstruk=b.tanggal AND a.station=b.station AND a.shift=b.shift AND a.docno=b.docno
               HAVING ISNULL(plu))a GROUP BY a.tanggal) c ON c.toko=a.toko and c.tglstruk=b.tanggal order by b.tanggal;`;
 
+    const encryptPayload = await getAESEncrypted(querynya);
     return {
       status: "sukses",
       data: {
@@ -51,7 +53,7 @@ const preparePayload = async (kdcab, toko, tanggal) => {
         task: "SQL",
         idreport: `ambildatastruk-${toko}${tanggal}`,
         station: "01",
-        command: querynya,
+        command: encryptPayload,
       },
     };
   } catch (error) {
