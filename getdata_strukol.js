@@ -1,8 +1,6 @@
 const Models = require("./models/model");
-const { readRespSql, requestTask, loginTask } = require("./helpers/readresp");
+const { requestTask, loginTask } = require("./helpers/readresp");
 const { clientRedis } = require("./services/redis");
-const Papa = require("papaparse");
-const fs = require("fs");
 const dayjs = require("dayjs");
 const cron = require("node-cron");
 const { getAESEncrypted } = require("./helpers/encrypt");
@@ -159,7 +157,7 @@ const doitBro = async () => {
           const prepareNoStruk = listNoStruk.map(
             (r) => `('${r.kdcab}','${r.toko}','${r.tanggal}','0','0','0','','0','success',now())`
           );
-          const queryInsertNoStruk = `insert into summary_varian_2024 (kdcab,toko,tanggal,jmlStruk,noStruk,nilaiStruk,isiStruk,isvirtual,statusListener,addtimeListener)
+          const queryInsertNoStruk = `insert into summary_varian_2025 (kdcab,toko,tanggal,jmlStruk,noStruk,nilaiStruk,isiStruk,isvirtual,statusListener,addtimeListener)
           values ${prepareNoStruk.join(",")} as new
           on duplicate key update
           jmlStruk = new.jmlStruk,
@@ -183,7 +181,7 @@ const doitBro = async () => {
             }','${r.isiStruk.replace(/'/g, "")}','${isvirtual}','success',now())`;
           });
 
-          const queryInsert = `insert into summary_varian_2024 (kdcab,toko,tanggal,jmlStruk,noStruk,nilaiStruk,isiStruk,isvirtual,statusListener,addtimeListener)
+          const queryInsert = `insert into summary_varian_2025 (kdcab,toko,tanggal,jmlStruk,noStruk,nilaiStruk,isiStruk,isvirtual,statusListener,addtimeListener)
                                         values ${hasil.join(",")} as new
                                         on duplicate key update
                                 jmlStruk = new.jmlStruk,

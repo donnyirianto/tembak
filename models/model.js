@@ -6,8 +6,6 @@ const conn_any = require("../services/anydb");
 const ftp = require("../services/ftp");
 var dateFormat = require("dateformat");
 var dayjs = require("dayjs");
-const Papa = require("papaparse");
-const fs = require("fs");
 
 /* 
 --- user kasir new 2023-02 ----
@@ -67,10 +65,18 @@ const getTokoStruk = async (toko) => {
     //--AND statusListener is null
     //AND (lower(statusListener) not rlike 'succes' or statusListener is null or jmlstruk > 10)
     //${filter}
+    /*
+    select kdcab,toko,group_concat(tanggal) as tanggal from summary_varian_2025 
+    where tanggal >= '${dayjs().subtract(7, "day").format("YYYY-MM-DD")}'
+    AND (lower(statusListener) not rlike 'succes' or statusListener is null or jmlstruk > 10)
+    ${filter} 
+    group by kdcab,toko;
+    */
+
     const filter = toko.length > 0 ? `and concat(toko,tanggal) not in(${toko})` : "";
     const rows = await conn_ho.query(`
-    select kdcab,toko,group_concat(tanggal) as tanggal from summary_varian_2024 
-    where tanggal >= '${dayjs().subtract(7, "day").format("YYYY-MM-DD")}'
+    select kdcab,toko,group_concat(tanggal) as tanggal from summary_varian_2025 
+    where tanggal >= '2025-01-01'
     AND (lower(statusListener) not rlike 'succes' or statusListener is null or jmlstruk > 10)
     ${filter} 
     group by kdcab,toko;
@@ -440,7 +446,7 @@ const getListIplombok = async () => {
   }
 };
 
-const getListIpPbTernate = async (kdcab) => {
+const getListIpPbTernate = async () => {
   try {
     "T0Y1",
       "T454",
@@ -643,7 +649,7 @@ const getListIpPromo = async (kdcab) => {
     return "Error";
   }
 };
-const getListIpBap = async (kdcab) => {
+const getListIpBap = async () => {
   try {
     //'G004','G025','G030','G034','G097','G146','G148','G149','G158','G174','G177','G301','G305')
     const [rows] = await conn_local.query(`
@@ -1181,7 +1187,7 @@ const insertDataRRAKTrend = async (kdcab, kdtk, namatoko, data) => {
   }
 };
 
-const insertDataRRAKData = async (kdcab, kdtk, namatoko, data) => {
+const insertDataRRAKData = async (kdcab, _kdtk, namatoko, data) => {
   try {
     //'G025','G030','G034','G097','G146','G148','G149','G158','G174','G301','G305')
     //console.log(data)
@@ -1335,7 +1341,7 @@ const UpdateDataInitial = async (kdcab, kdtk, nama) => {
   }
 };
 
-const insertDataHis = async (kdtk, plu, data) => {
+const insertDataHis = async (kdtk, _plu, data) => {
   var dd = [];
   for (const i of data) {
     dd.push(`('${kdtk}', '${i.prdcd}',
@@ -1969,8 +1975,8 @@ const vquery = async (iptoko, param) => {
   try {
     const rows = await conn_any.runQuery(
       iptoko,
-      "kasir",
-      "xDxXDCtUtIl6DJrwkxoVA0nvNgG5OUWlM=eP2hoyuOre",
+      "root",
+      "iczmGcFJe//jBPZPGPFz0qTFHmiKHou6I=JFw32YgFQP",
       "pos",
       3306,
       param
@@ -2025,26 +2031,8 @@ const getListRRAK = async () => {
     return "Error";
   }
 };
-const UpdateAbsenRrak = async (r) => {
+const UpdateAbsenRrak = async (_r) => {
   try {
-    const res = await conn_new.query(`
-        update absen_rrak 
-        set 
-            rec='${r[0].rec}' ,
-            qtyrenc ='${r[0].qtyrenc}' ,
-            rprenc ='${r[0].rprenc}' ,
-            rpreal ='${r[0].rpreal}' ,
-            fvalid_true ='${r[0].fvalid_true}' ,
-            fvalid_false ='${r[0].fvalid_false}' ,
-            ftrf_true ='${r[0].ftrf_true}' ,
-            ftrf_false ='${r[0].ftrf_false}' ,
-            tglbuat ='${r[0].tglbuat}' ,
-            keterangan ='${r[0].keterangan}'
-        where 
-        kdcab='${r[0].kdcab}' 
-        and toko='${r[0].toko}';
-        `);
-
     return "Sukses";
   } catch (e) {
     return "Error";

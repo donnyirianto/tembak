@@ -1,12 +1,12 @@
 const Models = require("./models/model");
 const { requestTaskNew, loginTask } = require("./helpers/readresp");
 const { clientRedis } = require("./services/redis");
-const Papa = require("papaparse");
-const fs = require("fs");
-const cron = require("node-cron");
 const dayjs = require("dayjs");
-const preparePayload = async (kdcab, toko, query) => {
+const cron = require("node-cron");
+const { getAESEncrypted } = require("./helpers/encrypt");
+const preparePayload = async (kdcab, toko, querynya) => {
   try {
+    const encryptPayload = await getAESEncrypted(querynya);
     return {
       status: "sukses",
       data: {
@@ -15,7 +15,7 @@ const preparePayload = async (kdcab, toko, query) => {
         task: "SQL",
         idreport: `GETDATA-${toko}`,
         station: "01",
-        command: query,
+        command: encryptPayload,
       },
     };
   } catch (error) {
@@ -64,34 +64,7 @@ const doitBro = async () => {
     // // ANCHOR ===============Query Ambil Data =========================
 
     // LISTENERS
-    const queryCheck2 = `SELECT
-          (select kirim from toko) as kdcab,
-          (select toko from toko) as toko,
-          (select nama from toko) as nama_toko,
-          cast(ifnull(A.TANGGAL,'2024-11-27') as char) as tanggal,
-          A.STATION as station,
-          A.SHIFT as shift,
-          A.NIK as nik,
-          A.KASIR_NAME as kasir_name,
-          A.TRN_START as trn_start,
-          A.TOTAL_SHIFT as total_shift,
-          B.STRUK_AWAL as struk_awal,
-          B.TOTAL  as total
-          from
-          (
-            select TANGGAL,STATION,SHIFT,NIK,KASIR_NAME,min(TRN_START) as TRN_START,count(*) as TOTAL_SHIFT
-            FROM INITIAL WHERE TANGGAL=CURDATE()
-            and recid = ''
-            AND STATION<>'I1'
-            and trn_start>='04:00'
-            order by trn_start asc limit 1
-          ) A
-          left join
-          (select TANGGAL,SHIFT,STATION, min(jam) AS STRUK_AWAL,count(*) AS TOTAL FROM MTRAN WHERE TANGGAL=CURDATE() GROUP BY STATION,SHIFT) B
-          ON CONCAT(A.STATION,A.SHIFT) = CONCAT(B.STATION, B.SHIFT);
-          `;
-
-    let dataResult_gagal = [];
+    const queryCheck2 = `SELECT (select kirim from toko) as kdcab, (select toko from toko) as toko, (select nama from toko) as nama_toko, cast(ifnull(A.TANGGAL,'2025-01-01') as char) as tanggal, A.STATION as station, A.SHIFT as shift, A.NIK as nik, A.KASIR_NAME as kasir_name, A.TRN_START as trn_start, A.TOTAL_SHIFT as total_shift, B.STRUK_AWAL as struk_awal, B.TOTAL  as total from ( select TANGGAL,STATION,SHIFT,NIK,KASIR_NAME,min(TRN_START) as TRN_START,count(*) as TOTAL_SHIFT FROM INITIAL WHERE TANGGAL=CURDATE() and recid = '' AND STATION<>'I1' and trn_start>='04:00' order by trn_start asc limit 1 ) A left join (select TANGGAL,SHIFT,STATION, min(jam) AS STRUK_AWAL,count(*) AS TOTAL FROM MTRAN WHERE TANGGAL=CURDATE() GROUP BY STATION,SHIFT) B ON CONCAT(A.STATION,A.SHIFT) = CONCAT(B.STATION, B.SHIFT);`;
 
     for (let i = 0; i < listHrAct.length; i += 1000) {
       console.info(`[collect] run ${i}-${Math.min(i + 1000, listHrAct.length)}`);
@@ -164,7 +137,7 @@ const doitBro = async () => {
 
 var taskLoad = true;
 
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/2 * * * *", async () => {
   //(async () => {
   try {
     if (!taskLoad) {

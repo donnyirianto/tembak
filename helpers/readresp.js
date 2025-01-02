@@ -3,7 +3,7 @@ const dayjs = require("dayjs");
 const { bykdtk } = require("./iptoko");
 const { runQuery } = require("../services/anydb");
 
-const readRespSql = async (client, kdcab, toko, tanggal, query) => {
+const readRespSql = async (client, kdcab, toko, tanggal) => {
   try {
     const payload = [
       {
@@ -223,12 +223,13 @@ const requestTaskNew = async (client, token, dataPayload, urutReq) => {
     const start = dayjs().format("YYYY-MM-DD HH:mm:ss");
     console.log(`Urutan Request: ${urutReq} - ${dayjs().format("YYYY-MM-DD HH:mm:ss.SSS")}`);
 
-    const respTask = await axios.post("http://172.24.52.10:7321/ReportFromListener/v1/CekStore", dataPayload, {
+    const respTask = await axios.post("http://172.24.52.14:7321/ReportFromListener/v1/CekStore", dataPayload, {
       headers: {
         Token: `${token}`,
       },
       timeout: 300000,
     });
+    //console.log(respTask.data);
     const end = dayjs().format("YYYY-MM-DD HH:mm:ss");
     const selsai = dayjs().diff(start);
     console.log("request ke - ", urutReq, `Start: ${start},  end: ${end}, selesai: ${selsai}`);

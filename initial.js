@@ -1,4 +1,3 @@
-const fs = require("fs");
 const Models = require("./models/model");
 process.setMaxListeners(0);
 const cron = require("node-cron");
@@ -16,7 +15,7 @@ const doitBro = async () => {
           (select kirim from toko) as kdcab, 
           (select toko from toko) as kdtk, 
           (select nama from toko) as nama_toko,
-          cast(ifnull(A.TANGGAL,'2024-11-27') as char) as TANGGAL,A.STATION, A.SHIFT,A.NIK,A.KASIR_NAME,A.TRN_START, A.TOTAL_SHIFT, B.STRUK_AWAL,B.TOTAL 
+          cast(ifnull(A.TANGGAL,'2025-01-01') as char) as TANGGAL,A.STATION, A.SHIFT,A.NIK,A.KASIR_NAME,A.TRN_START, A.TOTAL_SHIFT, B.STRUK_AWAL,B.TOTAL 
           from 
           (
             select TANGGAL,STATION,SHIFT,NIK,KASIR_NAME,min(TRN_START) as TRN_START,count(*) as TOTAL_SHIFT
