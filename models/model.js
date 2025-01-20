@@ -35,16 +35,24 @@ const getListIp = async () => {
 };
 //kdcab in('G117','G113','G107','G026','G157','G033')
 //and kdcab in(select kdcab from m_server_iris where jenis = 'IRIS' and reg = 'reg4')
-const getToko = async () => {
+const getToko = async (listtoko) => {
   try {
-    const rows = await conn_ho.query(`
+    if (listtoko.length > 0) {
+      const rows = await conn_ho.query(`
         select kdcab,toko from m_toko_aktif 
         where tanggal =curdate()
-        and kdcab in(select kdcab from m_server_iris where jenis = 'IRIS' and reg='REG4')
-        and toko not in(select kdtk from initial where tanggal !='0000-00-00')
+        and toko not in(${listtoko.join(",")})        
     `);
 
-    return rows;
+      return rows;
+    } else {
+      const rows = await conn_ho.query(`
+        select kdcab,toko from m_toko_aktif 
+        where tanggal =curdate()
+    `);
+
+      return rows;
+    }
   } catch (e) {
     return "Error";
   }
@@ -970,19 +978,20 @@ const vqueryTembak = async (iptoko, param) => {
   }
 };
 
-const vqueryTembakIris = async (client, kdcab, ip, user, pass, db, param) => {
+const vqueryTembakIris = async (kdcab, ip, user, pass, db, param) => {
   try {
     const start = dayjs().format("YYYY-MM-DD HH:mm:ss");
+
     const rows = await conn_any.runQuery(ip, user, pass, db, 3306, param);
 
     if (rows.status != "OK") throw new Error(rows.data);
 
-    await client.set(`GETDATAIRIS-${kdcab}`, JSON.stringify(rows.data));
+    //await client.set(`GETDATAIRIS-${kdcab}`, JSON.stringify(rows.data));
     const end = dayjs().format("YYYY-MM-DD HH:mm:ss");
     console.log(`${kdcab}|${start}|${end}`);
     return `${kdcab}-Sukses`;
   } catch (e) {
-    console.log(`${kdcab}-Gagal`);
+    console.log(`${kdcab}-Gagal: ${e}`);
     return {
       kdcab: kdcab,
       status: "NOK",

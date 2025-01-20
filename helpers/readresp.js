@@ -163,7 +163,7 @@ const requestTask = async (client, token, dataPayload, urutReq) => {
     const start = dayjs().format("YYYY-MM-DD HH:mm:ss");
     console.log(`Urutan Request: ${urutReq} - ${dayjs().format("YYYY-MM-DD HH:mm:ss.SSS")}`);
 
-    const respTask = await axios.post("http://172.24.52.14:7321/ReportFromListener/v1/CekStore", dataPayload, {
+    const respTask = await axios.post("http://172.24.52.10:7321/ReportFromListener/v1/CekStore", dataPayload, {
       headers: {
         Token: `${token}`,
       },
@@ -220,39 +220,45 @@ const requestTask = async (client, token, dataPayload, urutReq) => {
 const requestTaskNew = async (client, token, dataPayload, urutReq) => {
   try {
     await sleep(urutReq * 1000);
-    const start = dayjs().format("YYYY-MM-DD HH:mm:ss");
-    console.log(`Urutan Request: ${urutReq} - ${dayjs().format("YYYY-MM-DD HH:mm:ss.SSS")}`);
 
-    const respTask = await axios.post("http://172.24.52.14:7321/ReportFromListener/v1/CekStore", dataPayload, {
+    if (dataPayload.length == 0) {
+      return {
+        status: "NOK",
+        msg: "Skip",
+      };
+    }
+    const respTask = await axios.post("http://172.24.52.30:7321/ReportFromListener/v1/CekStore", dataPayload, {
       headers: {
         Token: `${token}`,
       },
       timeout: 300000,
     });
-    //console.log(respTask.data);
-    const end = dayjs().format("YYYY-MM-DD HH:mm:ss");
-    const selsai = dayjs().diff(start);
-    console.log("request ke - ", urutReq, `Start: ${start},  end: ${end}, selesai: ${selsai}`);
+
+    // const end = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    // const selsai = dayjs().diff(start);
+    // console.log("request ke - ", urutReq, `Start: ${start},  end: ${end}, selesai: ${selsai}`);
     if (respTask.data.code == "200") {
       let readResponse = JSON.parse(respTask.data.data);
 
       for (let dataRes of readResponse) {
         if (dataRes.msg.substring(0, 6) != "Succes") {
-          console.log("Msg Tidak sesuai", dataRes.msg);
+          console.log(JSON.stringify(dataRes) + ",");
           continue;
         }
         let dataReponse = [];
+        console.log(dataRes);
+        console.log("===================");
         if (dataRes.msg != "Succes SQL Native") {
           let u = JSON.parse(dataRes.data);
 
           for (let detail of u) {
             try {
               let x = JSON.parse(detail);
-              if (!x[0].hasOwnProperty("pesan")) {
+              if (!x.hasOwnProperty("pesan")) {
                 dataReponse.push(...x);
               }
             } catch (error) {
-              console.error(`Error parsing JSON: ${error.message} value: ${detail}`);
+              console.log(`Error ${error.message} value: ${JSON.stringify(dataRes)}`);
               continue;
             }
           }
@@ -265,14 +271,14 @@ const requestTaskNew = async (client, token, dataPayload, urutReq) => {
                 dataReponse.push(...x);
               }
             } catch (error) {
-              console.error(`Error parsing JSON: ${error.message}`);
+              console.log(`Error: ${JSON.stringify(u)}`);
               continue;
             }
           }
         }
 
         if (dataReponse.hasOwnProperty("error") || dataReponse.hasOwnProperty("pesan")) {
-          console.log("Error");
+          console.log(`Error: ${JSON.stringify(dataRes)}`);
           continue;
         }
         if (dataReponse.length > 0) {

@@ -142,7 +142,7 @@ const doitBro = async () => {
         await requestTask(clientRedis, token, dataPayload, 1);
       }
 
-      const dataHasil = await clientRedis.keys("strukol*");
+      const dataHasil = await clientRedis.keys("strukol-*");
 
       if (dataHasil.length > 0) {
         const prepare = dataHasil.map((r) => prepareData(clientRedis, r));

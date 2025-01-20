@@ -5,9 +5,11 @@ const Papa = require("papaparse");
 const fs = require("fs");
 const { getAESEncrypted } = require("./helpers/encrypt");
 
-const preparePayload = async (kdcab, toko, query) => {
+const preparePayload = async (kdcab, toko) => {
   try {
-    const payloadEncrypted = await getAESEncrypted(query);
+    const queryCheck2 = `select kirim as kdcab , toko from toko;`;
+
+    const payloadEncrypted = await getAESEncrypted(queryCheck2);
     return {
       status: "sukses",
       data: {
@@ -52,37 +54,20 @@ const doitBro = async () => {
       token = reqToken.data;
       await clientRedis.set(`token-ess`, token, { EX: 60 * 50 });
     }
-
+    let list_toko = [];
     const x = await clientRedis.keys("GETDATA-*");
     x.forEach(async (r) => {
-      await clientRedis.del(r);
+      //await clientRedis.del(r);
+      list_toko.push(`'${r.split("-")[1]}'`);
     });
     const start = new Date();
     console.log("Running At : " + start);
 
-    const listHrAct = await Models.getToko();
+    const listHrAct = await Models.getToko(list_toko);
 
     // // ANCHOR ===============Query Ambil Data =========================
 
     // LISTENERS
-    const queryCheck2 = `SELECT  
-          (select kirim from toko) as kdcab, 
-          (select toko from toko) as kdtk, 
-          (select nama from toko) as nama_toko,
-          cast(ifnull(A.TANGGAL,'2024-11-27') as char) as TANGGAL,A.STATION, A.SHIFT,A.NIK,A.KASIR_NAME,A.TRN_START, A.TOTAL_SHIFT, B.STRUK_AWAL,B.TOTAL 
-          from 
-          (
-            select TANGGAL,STATION,SHIFT,NIK,KASIR_NAME,min(TRN_START) as TRN_START,count(*) as TOTAL_SHIFT
-            FROM INITIAL WHERE TANGGAL=CURDATE() 
-            and recid = '' 
-            AND STATION<>'I1' 
-            and trn_start>='04:00' 
-            order by trn_start asc limit 1
-          ) A
-          left join 
-          (select TANGGAL,SHIFT,STATION, min(jam) AS STRUK_AWAL,count(*) AS TOTAL FROM MTRAN WHERE TANGGAL=CURDATE() GROUP BY STATION,SHIFT) B
-          ON CONCAT(A.STATION,A.SHIFT) = CONCAT(B.STATION, B.SHIFT);
-          `;
 
     let dataResult_gagal = [];
 
@@ -92,7 +77,7 @@ const doitBro = async () => {
 
       for (let j = i; j < Math.min(i + 1000, listHrAct.length); j++) {
         const promise = new Promise((res, rej) => {
-          preparePayload(listHrAct[j].kdcab, listHrAct[j].toko, queryCheck2)
+          preparePayload(listHrAct[j].kdcab, listHrAct[j].toko)
             .then((val) => {
               res(val);
             })
@@ -111,16 +96,11 @@ const doitBro = async () => {
 
       if (dataPayload.length >= 50) {
         let allPromise2 = [
-          requestTaskNew(clientRedis, token, dataPayload.slice(0, 100), 1),
-          requestTaskNew(clientRedis, token, dataPayload.slice(100, 200), 2),
-          requestTaskNew(clientRedis, token, dataPayload.slice(200, 300), 3),
-          requestTaskNew(clientRedis, token, dataPayload.slice(300, 400), 4),
-          requestTaskNew(clientRedis, token, dataPayload.slice(400, 500), 5),
-          requestTaskNew(clientRedis, token, dataPayload.slice(500, 600), 6),
-          requestTaskNew(clientRedis, token, dataPayload.slice(600, 700), 7),
-          requestTaskNew(clientRedis, token, dataPayload.slice(700, 800), 8),
-          requestTaskNew(clientRedis, token, dataPayload.slice(800, 900), 9),
-          requestTaskNew(clientRedis, token, dataPayload.slice(900, 1000), 10),
+          requestTaskNew(clientRedis, token, dataPayload.slice(0, 200), 1),
+          requestTaskNew(clientRedis, token, dataPayload.slice(200, 400), 2),
+          requestTaskNew(clientRedis, token, dataPayload.slice(400, 600), 3),
+          requestTaskNew(clientRedis, token, dataPayload.slice(600, 800), 4),
+          requestTaskNew(clientRedis, token, dataPayload.slice(800, 1000), 5),
         ];
         await Promise.allSettled(allPromise2);
       } else {
@@ -128,7 +108,7 @@ const doitBro = async () => {
       }
     }
 
-    const dataHasil = await clientRedis.keys("GETDATA*");
+    const dataHasil = await clientRedis.keys("GETDATA-*");
 
     if (dataHasil.length > 0) {
       const prepare = dataHasil.map((r) => prepareData(clientRedis, r));
@@ -138,9 +118,9 @@ const doitBro = async () => {
       const csv_sukses = Papa.unparse(hasil.flat(), { delimiter: "|" });
       fs.writeFileSync("data_sukses.csv", csv_sukses);
     }
-    dataHasil.forEach(async (r) => {
-      //await clientRedis.del(r);
-    });
+    // dataHasil.forEach(async (r) => {
+    //   await clientRedis.del(r);
+    // });
 
     const csv_gagal = Papa.unparse(dataResult_gagal, { delimiter: "|" });
     fs.writeFileSync("data_gagal.csv", csv_gagal);
