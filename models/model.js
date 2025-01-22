@@ -25,7 +25,7 @@ const getListIp = async () => {
         select kdcab,toko as kdtk,ip_induk as ip1 from m_toko_ip
         where kdcab in(select kdcab from m_server_iris where jenis='iris' and reg='reg4')
         AND left(toko,1) not in('B','G','D')
-        and kdcab ='G025'
+        and kdcab ='G004'
     `);
 
     return rows;
@@ -49,6 +49,7 @@ const getToko = async (listtoko) => {
       const rows = await conn_ho.query(`
         select kdcab,toko from m_toko_aktif 
         where tanggal =curdate()
+        and kdcab ='G001'
     `);
 
       return rows;

@@ -175,24 +175,26 @@ const requestTask = async (client, token, dataPayload, urutReq) => {
     if (respTask.data.code == "200") {
       let readResponse = JSON.parse(respTask.data.data);
 
+      if (readResponse.length == 0) return;
+
       for (let dataRes of readResponse) {
         if (dataRes.msg.substring(0, 6) != "Succes") {
           console.log("Msg Tidak sesuai", dataRes.msg);
           continue;
         }
-        let dataReponse = [];
-        if (dataRes.msg != "Succes SQL Native") {
-          let u = JSON.parse(dataRes.data);
-          let x = JSON.parse(u);
-          dataReponse = x;
-        } else {
-          dataReponse = JSON.parse(dataRes.data);
-        }
 
-        if (dataReponse.hasOwnProperty("error") || dataReponse.hasOwnProperty("pesan")) {
-          console.log("Error");
+        if (dataRes.data == "null") continue;
+
+        let u = JSON.parse(dataRes.data);
+
+        let dataReponse = [];
+
+        if (u[0].hasOwnProperty("pesan")) {
+          console.log(`Error PESAN ${detail.pesan} value: ${JSON.stringify(dataRes)}`);
           continue;
         }
+
+        dataReponse.push(...u);
 
         await client.set(`strukol-${dataReponse[0].toko}`, JSON.stringify(dataReponse), {
           EX: 60 * 15,
@@ -237,50 +239,31 @@ const requestTaskNew = async (client, token, dataPayload, urutReq) => {
     // const end = dayjs().format("YYYY-MM-DD HH:mm:ss");
     // const selsai = dayjs().diff(start);
     // console.log("request ke - ", urutReq, `Start: ${start},  end: ${end}, selesai: ${selsai}`);
+
     if (respTask.data.code == "200") {
       let readResponse = JSON.parse(respTask.data.data);
+
+      if (readResponse.length == 0) return;
 
       for (let dataRes of readResponse) {
         if (dataRes.msg.substring(0, 6) != "Succes") {
           console.log(JSON.stringify(dataRes) + ",");
           continue;
         }
+
+        if (dataRes.data == "null") continue;
+
+        let u = JSON.parse(dataRes.data);
+
         let dataReponse = [];
-        console.log(dataRes);
-        console.log("===================");
-        if (dataRes.msg != "Succes SQL Native") {
-          let u = JSON.parse(dataRes.data);
 
-          for (let detail of u) {
-            try {
-              let x = JSON.parse(detail);
-              if (!x.hasOwnProperty("pesan")) {
-                dataReponse.push(...x);
-              }
-            } catch (error) {
-              console.log(`Error ${error.message} value: ${JSON.stringify(dataRes)}`);
-              continue;
-            }
-          }
-        } else {
-          let u = JSON.parse(dataRes.data);
-          for (let detail of u) {
-            try {
-              let x = JSON.parse(detail);
-              if (!x[0].hasOwnProperty("pesan")) {
-                dataReponse.push(...x);
-              }
-            } catch (error) {
-              console.log(`Error: ${JSON.stringify(u)}`);
-              continue;
-            }
-          }
-        }
-
-        if (dataReponse.hasOwnProperty("error") || dataReponse.hasOwnProperty("pesan")) {
-          console.log(`Error: ${JSON.stringify(dataRes)}`);
+        if (u[0].hasOwnProperty("pesan")) {
+          console.log(`Error PESAN ${detail.pesan} value: ${JSON.stringify(dataRes)}`);
           continue;
         }
+
+        dataReponse.push(...u);
+
         if (dataReponse.length > 0) {
           await client.set(`GETDATA-${dataReponse[0].toko}`, JSON.stringify(dataReponse), {
             EX: 60 * 60 * 15,

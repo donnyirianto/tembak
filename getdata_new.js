@@ -7,7 +7,7 @@ const { getAESEncrypted } = require("./helpers/encrypt");
 
 const preparePayload = async (kdcab, toko) => {
   try {
-    const queryCheck2 = `select kirim as kdcab , toko from toko;`;
+    const queryCheck2 = `select kirim as kdcab, toko from toko;`;
 
     const payloadEncrypted = await getAESEncrypted(queryCheck2);
     return {
@@ -57,8 +57,8 @@ const doitBro = async () => {
     let list_toko = [];
     const x = await clientRedis.keys("GETDATA-*");
     x.forEach(async (r) => {
-      //await clientRedis.del(r);
-      list_toko.push(`'${r.split("-")[1]}'`);
+      await clientRedis.del(r);
+      //list_toko.push(`'${r.split("-")[1]}'`);
     });
     const start = new Date();
     console.log("Running At : " + start);
